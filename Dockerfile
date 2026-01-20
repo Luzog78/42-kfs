@@ -19,13 +19,8 @@ RUN	apt-get install -y grub-common
 RUN	apt-get install -y binutils
 RUN	apt-get install -y xorriso
 
-ENV	PREFIX="/opt/cross"
-ENV	TARGET=x86_64-elf
-ENV	PATH="$PREFIX/bin:$PATH"
-
 COPY	./dist /workspace/dist
 COPY	./src /workspace/src
-RUN		make -C /workspace/src install-binutils
 
 WORKDIR	/workspace/src
 
