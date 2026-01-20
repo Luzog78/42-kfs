@@ -6,7 +6,7 @@
 #    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/20 16:52:45 by luzog78          ###   ########.fr        #
+#    Updated: 2026/01/20 17:45:22 by luzog78          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,10 @@ OBJ_DIR			:= /workspace/obj
 ASM_SRC			:= src/boot.asm
 ASM_OBJ			:= $(ASM_SRC:.asm=.asm.o)
 
-C_SRC			:= src/main.c
+C_SRC			:=	src/main.c \
+					src/stdlib/vga.c \
+					src/stdlib/term.c \
+					src/stdlib/strlen.c
 C_OBJ			:= $(C_SRC:.c=.c.o)
 
 LINKER_FILE		:= src/linker.ld
@@ -38,7 +41,7 @@ LD				:= ld
 LD_FLAGS		:= -m elf_i386 -b elf32-i386
 
 CC				:= g++
-CFLAGS			:= -m32 -ffreestanding -O2 -Wall -Wextra -c -fno-builtin -fno-exceptions -fno-stack-protector -fno-rtti -nostdlib -nodefaultlibs
+CFLAGS			:= -m32 -ffreestanding -O2 -Wall -Wextra -c -fno-builtin -fno-exceptions -fno-stack-protector -fno-rtti -nostdlib -nodefaultlibs -I $(WD)/src/headers
 
 NASM			:= nasm
 NASM_FLAGS		:= -f elf32

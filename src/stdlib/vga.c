@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   vga.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/20 16:03:28 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/20 17:48:20 by luzog78          ###   ########.fr       */
+/*   Created: 2026/01/20 17:14:23 by luzog78           #+#    #+#             */
+/*   Updated: 2026/01/20 17:46:48 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
 
-int main(void) {
-	term_fill(vga_color(VGA_C_LIGHT_BLUE, VGA_C_BLACK));
-	term_put(
-		"Hello 42!\nWe're here!",
-		vga_color(VGA_C_LIGHT_GREEN, VGA_C_BLACK),
-		VGA_OFFSET(0, 0)
-	);
+uint16_t vga_color(uint8_t vga_fg, uint8_t vga_bg) {
+	return vga_bg << 12 | vga_fg << 8;
+}
 
-	while (1)
-		asm volatile ("hlt");
-	return 0;
+uint16_t vga_char(uchar_t c, uint8_t vga_fg, uint8_t vga_bg) {
+	return vga_bg << 12 | vga_fg << 8 | c;
 }
