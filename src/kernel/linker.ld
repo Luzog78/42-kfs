@@ -1,0 +1,36 @@
+ENTRY(_start)
+
+SECTIONS
+{
+	. = 0x100000;
+
+	.boot : {
+		KEEP(*(.multiboot))
+	}
+
+	.text : {
+		*(.text)
+	}
+
+	.rodata : {
+		*(.rodata)
+		*(.rodata.*)
+	}
+
+	.data : {
+		*(.data)
+		*(.data.*)
+	}
+
+	.ctors : {
+		start_ctors = .;
+		KEEP(*(.init_array))
+		KEEP(*(SORT(.ctors.*)))
+		KEEP(*(.ctors))
+		end_ctors = .;
+	}
+
+	.bss : {
+		*(.bss)
+	}
+}

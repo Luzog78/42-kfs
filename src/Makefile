@@ -6,42 +6,44 @@
 #    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/20 17:45:22 by luzog78          ###   ########.fr        #
+#    Updated: 2026/01/21 08:57:27 by luzog78          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 WD				:= /workspace
 OBJ_DIR			:= /workspace/obj
 
-ASM_SRC			:= src/boot.asm
+ASM_SRC			:= src/kernel/boot.asm
 ASM_OBJ			:= $(ASM_SRC:.asm=.asm.o)
 
-C_SRC			:=	src/main.c \
-					src/stdlib/vga.c \
-					src/stdlib/term.c \
-					src/stdlib/strlen.c
-C_OBJ			:= $(C_SRC:.c=.c.o)
+CPP_SRC			:=	src/kernel/main.cpp \
+					src/kernel/stdlib/strlen.cpp \
+					src/kernel/stdlib/VGA.cpp \
+					src/kernel/stdlib/Term.cpp
+CPP_OBJ			:= $(CPP_SRC:.cpp=.cpp.o)
 
-LINKER_FILE		:= src/linker.ld
+LINKER_FILE		:= src/kernel/linker.ld
 
 MULTIBOOT_OUT	:= src/iso/boot/multiboot.bin
 ISO_WD			:= src/iso
 ISO_OUT			:= dist/kfs.iso
+ISO_QUICK_OUT	:= dist/kfs_quick.iso
 
 
 ASM_OBJ			:= $(addprefix $(OBJ_DIR)/, $(ASM_OBJ))
-C_OBJ			:= $(addprefix $(OBJ_DIR)/, $(C_OBJ))
+CPP_OBJ			:= $(addprefix $(OBJ_DIR)/, $(CPP_OBJ))
 LINKER_FILE		:= $(addprefix $(WD)/, $(LINKER_FILE))
 MULTIBOOT_OUT	:= $(addprefix $(WD)/, $(MULTIBOOT_OUT))
 ISO_WD			:= $(addprefix $(WD)/, $(ISO_WD))
 ISO_OUT			:= $(addprefix $(WD)/, $(ISO_OUT))
+ISO_QUICK_OUT	:= $(addprefix $(WD)/, $(ISO_QUICK_OUT))
 
 
 LD				:= ld
 LD_FLAGS		:= -m elf_i386 -b elf32-i386
 
 CC				:= g++
-CFLAGS			:= -m32 -ffreestanding -O2 -Wall -Wextra -c -fno-builtin -fno-exceptions -fno-stack-protector -fno-rtti -nostdlib -nodefaultlibs -I $(WD)/src/headers
+CFLAGS			:= -m32 -ffreestanding -O2 -Wall -Wextra -g -c -fno-builtin -fno-exceptions -fno-stack-protector -fno-rtti -nostdlib -nodefaultlibs -mno-sse -mno-sse2 -mno-sse3 -mno-mmx -mno-3dnow -I $(WD)/src/headers
 
 NASM			:= nasm
 NASM_FLAGS		:= -f elf32
@@ -50,27 +52,52 @@ NASM_FLAGS		:= -f elf32
 # **************************************************************************** #
 
 
-build: $(MULTIBOOT_OUT)
+all: build-quick
 
-$(MULTIBOOT_OUT): $(ASM_OBJ) $(C_OBJ)
-	$(LD) $(LD_FLAGS) -n -o $(MULTIBOOT_OUT) -T $(LINKER_FILE) $(ASM_OBJ) $(C_OBJ)
-	grub-mkrescue /usr/lib/grub/i386-pc -o $(ISO_OUT) $(ISO_WD)
+help:
+	@echo "Makefile targets:"
+	@echo "  build        - Build the ISO file"
+	@echo "  build-quick  - Build the ISO file quickly (no compression)"
+	@echo "  verify       - Verify the multiboot binary"
+	@echo
+	@echo "  clean        - Remove object files and the multiboot binary"
+	@echo "  fclean       - Remove all generated files"
+	@echo "  re           - Rebuild everything"
+	@echo
+	@echo "  help         - Show this help message"
+
+
+# **************************************************************************** #
+
+
+build: $(ISO_OUT)
+
+build-quick: $(ISO_QUICK_OUT)
+
+$(ISO_OUT): $(MULTIBOOT_OUT) $(ASM_OBJ) $(CPP_OBJ)
+	grub-mkrescue /usr/lib/grub/i386-pc -o $(ISO_OUT) $(ISO_WD) --modules="multiboot biosdisk iso9660" --compress=xz
+
+$(ISO_QUICK_OUT): $(MULTIBOOT_OUT) $(ASM_OBJ) $(CPP_OBJ)
+	grub-mkrescue /usr/lib/grub/i386-pc -o $(ISO_QUICK_OUT) $(ISO_WD)
+
+$(MULTIBOOT_OUT): $(ASM_OBJ) $(CPP_OBJ)
+	$(LD) $(LD_FLAGS) -n -o $(MULTIBOOT_OUT) -T $(LINKER_FILE) $(ASM_OBJ) $(CPP_OBJ)
 
 $(OBJ_DIR)/%.asm.o: $(WD)/%.asm
-	mkdir -p $(dir $@)
-	$(NASM) $(NASM_FLAGS) -o $@ $<
+	mkdir -p $(dir $@) && $(NASM) $(NASM_FLAGS) -o $@ $<
 
-$(OBJ_DIR)/%.c.o: $(WD)/%.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $<
+$(OBJ_DIR)/%.cpp.o: $(WD)/%.cpp
+	mkdir -p $(dir $@) && $(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm -rf $(ASM_OBJ) $(C_OBJ) $(MULTIBOOT_OUT)
+	rm -rf $(ASM_OBJ) $(CPP_OBJ) $(MULTIBOOT_OUT)
 
 fclean: clean
-	rm -rf $(ISO_OUT)
+	rm -rf $(ISO_OUT) $(ISO_QUICK_OUT)
 
 re: fclean build
+
+re-quick: fclean build-quick
 
 verify: $(MULTIBOOT_OUT)
 	-grub-file --is-x86-multiboot $(MULTIBOOT_OUT) \
@@ -79,4 +106,8 @@ verify: $(MULTIBOOT_OUT)
 			&& (echo "Multiboot1 verified"; exit 0) \
 			&& (echo "Multiboot2 verification failed"; exit 1))
 
-.PHONY: build clean fclean re
+
+# **************************************************************************** #
+
+
+.PHONY: all help build build-quick clean fclean re re-quick verify

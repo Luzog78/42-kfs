@@ -46,8 +46,21 @@ section .text
 global _start
 
 extern main
+extern start_ctors			; (void (*)()): Start of C++ global constructors
+extern end_ctors			; (void (*)()): End of C++ global constructors
 
 _start:
 	mov esp, stack_bottom	; Set up stack pointer
+
+	; Call global constructors
+	mov ebx, start_ctors	; ebx = (void *) start_ctors
+	jmp .test_ctor			; goto .test_ctor
+	.call_ctor:
+		call [ebx]			; (*ebx)() --> Call constructor
+		add ebx, 4			; ebx += sizeof(void *)
+	.test_ctor:
+		cmp ebx, end_ctors	; if (ebx < (void *) end_ctors)
+		jb .call_ctor		;   goto .call_ctor
+
 	call main
 	hlt
