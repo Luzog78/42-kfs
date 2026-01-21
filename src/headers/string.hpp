@@ -1,20 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   strlen.cpp                                         :+:      :+:    :+:   */
+/*   string.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/20 17:13:25 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/20 18:49:49 by luzog78          ###   ########.fr       */
+/*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
+/*   Updated: 2026/01/21 15:13:18 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.hpp"
+#ifndef STRING_HPP
+# define STRING_HPP
 
-size_t strlen(const char *str) {
-	size_t len = 0;
-	while (str[len])
-		len++;
-	return len;
-}
+char	*itoa(int n);
+size_t	strlen(const char *str);
+
+#endif

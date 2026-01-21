@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 08:57:11 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/21 15:35:53 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ typedef unsigned long long	uint64_t;
 typedef uint64_t			size_t;
 typedef unsigned char		uchar_t;
 
-size_t	strlen(const char *str);
-
+#include "string.hpp"
 #include "Vect2.hpp"
 #include "VGA.hpp"
 #include "Term.hpp"

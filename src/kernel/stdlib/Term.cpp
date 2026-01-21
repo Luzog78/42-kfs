@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 09:48:02 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/21 15:37:34 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,54 @@ void	Term::putc(const char c, uint16_t vgaColor) {
 	incr(c);
 }
 
-void	Term::write(const char *str, size_t len) {
+void Term::putn(int nb)
+{
+	put(itoa(nb));
+}
+
+void Term::putn(int nb, uint16_t vgaColor)
+{
+	put(itoa(nb), vgaColor);
+}
+
+void Term::putn_hex(unsigned int nb)
+{
+	char hex[] = "0123456789ABCDEF";
+	static char str[11];
+	int i = 9;
+
+	str[10] = '\0';
+
+	while (nb > 0 && i >= 0)
+	{
+		str[i] = hex[nb % 16];
+		nb = nb / 16;
+		i--;
+	}
+	str[i] = 'x';
+	str[--i] = '0';
+	put(&str[i]);
+}
+
+void Term::putn_hex(unsigned int nb, uint16_t vgaColor)
+{
+	char hex[] = "0123456789ABCDEF";
+	static char str[11];
+	int i = 9;
+
+	str[10] = '\0';
+
+	while (nb > 0 && i >= 0)
+	{
+		str[i] = hex[nb % 16];
+		nb = nb / 16;
+		i--;
+	}
+	put(&str[i + 1], vgaColor);
+}
+
+void Term::write(const char *str, size_t len)
+{
 	for (size_t i = 0; i < len; i++)
 		putc(str[i]);
 }
@@ -231,4 +278,56 @@ uchar_t	Term::getWritable(const uchar_t c, const uchar_t replace) {
 	if (c > 128)
 		return c - 128; // Special chars in range: [1; 31]
 	return c; // Classic printable char
+}
+
+
+void Term::printk_specifier(const char *fmt, void **arg)
+{
+	switch (*fmt)
+	{
+	case 'c':
+		putc((char)*(char *)(arg));
+		break;
+	case 's':
+		put((const char *)*arg);
+		break;
+	case 'p':
+		put("0x");
+		putn_hex((unsigned int)arg);
+		break;
+	case 'd':
+	case 'i':
+		putn(*(int *)arg);
+		break;
+	case 'u':
+		putn(*(unsigned int *)*arg);
+		break;
+	case 'x':
+		putn_hex(*(unsigned int *)*arg);
+		break;
+	case '%':
+		putc('%');
+		break;
+	}
+}
+
+void Term::printk(const char *fmt, ...)
+{
+	int i = 0;
+	void **spec = (void **)&fmt;
+	spec++;
+
+	while (fmt[i])
+	{
+		if (fmt[i] == '%')
+		{
+			printk_specifier(&fmt[i + 1], spec);
+			i++;
+			if (fmt[i] != '%')
+				spec++;
+		}
+		else
+			putc(fmt[i]);
+		i++;
+	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 09:46:25 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/21 15:34:50 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,19 @@ class Term {
 		void	put(const char *str);
 		void	put(const char *str, uint16_t vgaColor);
 
+		void	putn(int nb);
+		void	putn(int nb, uint16_t vgaColor);
+
+		void	putn_hex(unsigned int nb);
+		void	putn_hex(unsigned int nb, uint16_t vgaColor);
+
 		void	fill(uint16_t vgaChar);
 		void	fill(const char c);
+		
 
+		
 		void	clear();
-
+		
 		Vect2<size_t>	getCursor() const;
 		void			setCursor(Vect2<size_t> pos);
 		void			resetCursor();
@@ -91,9 +99,13 @@ class Term {
 		
 		Vect2<size_t>	getMax() const;
 		void			setMax(Vect2<size_t> max);
-
+		
 		uint16_t		getColor() const;
 		void			setColor(uint16_t color);
+
+		void	printk_specifier(const char *fmt, void **arg);
+		void	printk(const char *fmt, ...);
+
 };
 
 #endif
