@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 08:57:11 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/21 16:46:43 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,6 @@ size_t	strlen(const char *str);
 #include "Vect2.hpp"
 #include "VGA.hpp"
 #include "Term.hpp"
+#include "keyboard.hpp"
 
 #endif

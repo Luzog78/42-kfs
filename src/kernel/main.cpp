@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 16:03:28 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 12:27:46 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/21 16:47:29 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.hpp"
+#include "keyboard.hpp"
 
 
 extern "C" int main(void) {
@@ -37,7 +38,8 @@ extern "C" int main(void) {
 		if (c != 127)
 			term.putc((char) c);
 
+	
 	while (1)
-		asm volatile ("hlt");
+		keyboard_handler(&term);
 	return 0;
 }

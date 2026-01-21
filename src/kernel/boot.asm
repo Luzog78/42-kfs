@@ -49,6 +49,20 @@ extern main
 extern start_ctors			; (void (*)()): Start of C++ global constructors
 extern end_ctors			; (void (*)()): End of C++ global constructors
 
+global read_port
+global write_port
+
+read_port:
+    mov edx, [esp + 4]
+    in al, dx
+    ret
+
+write_port:
+    mov   edx, [esp + 4]
+    mov   al, [esp + 4 + 4]
+    out   dx, al
+    ret
+
 _start:
 	mov esp, stack_bottom	; Set up stack pointer
 

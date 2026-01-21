@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
+#    By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/21 08:57:27 by luzog78          ###   ########.fr        #
+#    Updated: 2026/01/21 17:01:22 by bsavinel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,9 @@ ASM_OBJ			:= $(ASM_SRC:.asm=.asm.o)
 CPP_SRC			:=	src/kernel/main.cpp \
 					src/kernel/stdlib/strlen.cpp \
 					src/kernel/stdlib/VGA.cpp \
-					src/kernel/stdlib/Term.cpp
+					src/kernel/stdlib/Term.cpp \
+					src/kernel/stdlib/keyboard.cpp \
+					src/kernel/stdlib/keyboard_map.cpp
 CPP_OBJ			:= $(CPP_SRC:.cpp=.cpp.o)
 
 LINKER_FILE		:= src/kernel/linker.ld
