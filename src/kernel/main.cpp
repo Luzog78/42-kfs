@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 16:03:28 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 15:38:00 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/21 17:12:28 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,27 @@ extern "C" int main(void) {
 
 	term.clear();
 
-	term.put("Hello, Kernel World!\n\n");
-	term.printk("This is a string: %c\n", 'c');
+	term.put("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	term.put("@                                                                              @");
+	term.put("@  /$$   /$$  /$$$$$$         /$$        /$$$$$$                               @");
+	term.put("@ | $$  | $$ /$$__  $$       | $$       /$$__  $$                              @");
+	term.put("@ | $$  | $$|__/  \\ $$       | $$   /$$| $$  \\__//$$$$$$$                      @");
+	term.put("@ | $$$$$$$$  /$$$$$$//$$$$$$| $$  /$$/| $$$$   /$$_____/                      @");
+	term.put("@ |_____  $$ /$$____/|______/| $$$$$$/ | $$_/  |  $$$$$$    ___                @");
+	term.put("@       | $$| $$             | $$_  $$ | $$     \\____  $$  | _ )_  _           @");
+	term.put("@       | $$| $$$$$$$$       | $$ \\  $$| $$     /$$$$$$$/  | _ \\ || | ysabik   @");
+	term.put("@       |__/|________/       |__/  \\__/|__/    |_______/   |___/\\_, | bsavinel @");
+	term.put("@                                                               |__/           @");
+	term.put("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	term.put("\n");
+	
+	term.put("Here is every supported chars: ");
+	term.setColor(VGA::character(VGA_C_GREEN, VGA_C_DARK_GREY));
+	for (uchar_t c = 32; c < 160; c++)
+		if (c != 127)
+			term.putc((char) c);
+	
+	term.printk("\nThis is a number: %d\n", 42);
 	while (1)
 		asm volatile ("hlt");
 	return 0;
