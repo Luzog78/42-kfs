@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 09:48:02 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/21 12:05:25 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void	Term::incr(const char c) {
 			break;
 
 		case '\r':
+			if (_cur.x <= _min.x)
+				_cur.y--;
 			_cur.x = _min.x;
 			break;
 
@@ -90,8 +92,11 @@ void	Term::incr(const char c) {
 			break;
 
 		case '\b':
-			if (_cur.x > _min.x)
-				_cur.x--;
+			if (_cur.x <= _min.x) {
+				_cur.y--;
+				_cur.x = _max.x;
+			}
+			_cur.x--;
 			break;
 
 		default:
