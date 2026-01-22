@@ -6,12 +6,14 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 16:46:43 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 11:15:08 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HEADER_HPP
 #define HEADER_HPP
+
+#define NULL				((void *) 0)
 
 typedef char				int8_t;
 typedef short				int16_t;
@@ -22,10 +24,15 @@ typedef unsigned short		uint16_t;
 typedef unsigned int		uint32_t;
 typedef unsigned long long	uint64_t;
 typedef uint64_t			size_t;
+typedef int64_t				ssize_t;
 typedef unsigned char		uchar_t;
+typedef void				*ptr_t;
 
-size_t	strlen(const char *str);
+extern "C" uint32_t	stack_guard;
+extern "C" bool		stack_check(bool halt);
 
+#include "string.hpp"
+#include "Math.hpp"
 #include "Vect2.hpp"
 #include "VGA.hpp"
 #include "Term.hpp"

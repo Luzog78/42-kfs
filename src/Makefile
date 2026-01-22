@@ -6,7 +6,7 @@
 #    By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/21 17:01:22 by bsavinel         ###   ########.fr        #
+#    Updated: 2026/01/22 11:15:23 by bsavinel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,11 +17,11 @@ ASM_SRC			:= src/kernel/boot.asm
 ASM_OBJ			:= $(ASM_SRC:.asm=.asm.o)
 
 CPP_SRC			:=	src/kernel/main.cpp \
-					src/kernel/stdlib/strlen.cpp \
 					src/kernel/stdlib/VGA.cpp \
 					src/kernel/stdlib/Term.cpp \
 					src/kernel/stdlib/keyboard.cpp \
-					src/kernel/stdlib/keyboard_map.cpp
+					src/kernel/stdlib/keyboard_map.cpp \
+					src/kernel/stdlib/string.cpp
 CPP_OBJ			:= $(CPP_SRC:.cpp=.cpp.o)
 
 LINKER_FILE		:= src/kernel/linker.ld

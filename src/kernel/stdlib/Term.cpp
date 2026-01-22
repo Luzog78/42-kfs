@@ -6,64 +6,116 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 12:05:25 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/22 08:23:59 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.hpp"
 
-Term::Term() : Term(
-	Vect2<size_t>(0, 0),
-	Vect2<size_t>(VGA_WIDTH, VGA_HEIGHT)
-) {}
-
-Term::Term(uint16_t vgaColor) : Term(
-	Vect2<size_t>(0, 0),
-	Vect2<size_t>(VGA_WIDTH, VGA_HEIGHT),
-	vgaColor
-) {}
-
-Term::Term(Vect2<size_t> min, Vect2<size_t> max) : Term(
-	min.clone(),
-	max.clone(),
-	VGA::character(VGA_C_LIGHT_GREY, VGA_C_BLACK)
-) {}
-
-Term::Term(size_t minX, size_t minY, size_t maxX, size_t maxY) : Term(
-	Vect2<size_t>(minX, minY),
-	Vect2<size_t>(maxX, maxY)
-) {}
-
-Term::Term(Vect2<size_t> min, Vect2<size_t> max, uint16_t vgaColor) :
-	_min(min.clone()),
-	_max(max.clone()),
-	_cur(Vect2<size_t>(min.x, min.y)),
-	_pos(VGA::pos(min.y, min.x)),
-	_color(vgaColor) {
+Term::Term() :
+		_size(VGA_WIDTH, VGA_HEIGHT),
+		_histHeight(TERM_MAX_HIST_HEIGHT),
+		_color(TERM_DEFAULT_COLOR),
+		_renderPos(0, 0) {
+	_init();
 }
 
-Term::Term(size_t minX, size_t minY, size_t maxX, size_t maxY, uint16_t vgaColor) : Term(
-	Vect2<size_t>(minX, minY),
-	Vect2<size_t>(maxX, maxY),
-	vgaColor
-) {}
+Term::Term(uint16_t vgaColor) :
+		_size(VGA_WIDTH, VGA_HEIGHT),
+		_histHeight(TERM_MAX_HIST_HEIGHT),
+		_color(vgaColor),
+		_renderPos(0, 0) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size) :
+		_size(size.clone()),
+		_histHeight(TERM_MAX_HIST_HEIGHT),
+		_color(TERM_DEFAULT_COLOR),
+		_renderPos(0, 0) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, uint16_t vgaColor) :
+		_size(size.clone()),
+		_histHeight(TERM_MAX_HIST_HEIGHT),
+		_color(vgaColor),
+		_renderPos(0, 0) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, size_t histHeight) :
+		_size(size.clone()),
+		_histHeight(histHeight),
+		_color(TERM_DEFAULT_COLOR),
+		_renderPos(0, 0) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, size_t histHeight, uint16_t vgaColor) :
+		_size(size.clone()),
+		_histHeight(histHeight),
+		_color(vgaColor),
+		_renderPos(0, 0) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos) :
+		_size(size.clone()),
+		_histHeight(TERM_MAX_HIST_HEIGHT),
+		_color(TERM_DEFAULT_COLOR),
+		_renderPos(renderPos.clone()) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, uint16_t vgaColor) :
+		_size(size.clone()),
+		_histHeight(TERM_MAX_HIST_HEIGHT),
+		_color(vgaColor),
+		_renderPos(renderPos.clone()) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, size_t histHeight) :
+		_size(size.clone()),
+		_histHeight(histHeight),
+		_color(TERM_DEFAULT_COLOR),
+		_renderPos(renderPos.clone()) {
+	_init();
+}
+
+Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, size_t histHeight, uint16_t vgaColor) :
+		_size(size.clone()),
+		_histHeight(histHeight),
+		_color(vgaColor),
+		_renderPos(renderPos.clone()) {
+	_init();
+}
 
 Term::Term(const Term &other) : Term(
-	other._min,
-	other._max,
+	other._size,
+	other._renderPos,
+	other._histHeight,
 	other._color
 ) {
 	_cur = other._cur;
-	_pos = other._pos;
 }
 
 Term	&Term::operator=(const Term &other) {
 	if (this != &other) {
-		_min = other._min;
-		_max = other._max;
-		_cur = other._cur;
-		_pos = other._pos;
+		_size = other._size;
+		_histHeight = other._histHeight;
+
 		_color = other._color;
+		_cur = other._cur;
+
+		_renderPos = other._renderPos;
+		_scrollY = other._scrollY;
+		_rendering = other._rendering;
+
+		for (size_t i = 0; i < other._bufferSize; i++)
+			_buffer[i] = other._buffer[i];
+		_bufferSize = other._bufferSize;
 	}
 	return *this;
 }
@@ -74,17 +126,56 @@ Term::~Term() {}
 /* ************************************************************************** */
 
 
+void	Term::_init() {
+	_size.x = Math::clamp<size_t>(_size.x, 1, VGA_WIDTH);
+	_size.y = Math::clamp<size_t>(_size.y, 1, VGA_HEIGHT);
+	_histHeight = Math::clamp<size_t>(_histHeight, 1, TERM_MAX_HIST_HEIGHT);
+
+	_cur.x = Math::clamp<size_t>(_cur.x, 0, _size.x - 1);
+	_cur.y = Math::clamp<size_t>(_cur.y, 0, _size.y - 1);
+
+	_scrollY = Math::clamp<ssize_t>(_cur.y - _size.y - 1, 0, _histHeight);
+	_rendering = true;
+
+	_bufferSize = VGA_WIDTH * _histHeight;
+
+	stack_check(true);
+
+	if (_color) {
+		bool rendering = _rendering;
+		_rendering = false;
+		clear();
+		_rendering = rendering;
+	}
+}
+
+void	Term::_writec(size_t x, size_t y, uint16_t vgaChar) {
+	_buffer[VGA::pos(x, y)] = vgaChar;
+
+	if (_rendering) {
+		ssize_t	pos = VGA::pos(y + _renderPos.y - _scrollY, x + _renderPos.x);
+		if (pos >= 0 && pos < VGA_SIZE)
+			TERM_PTR[pos] = vgaChar;
+	}
+}
+
+void	Term::_flushc(size_t x, size_t y) {
+	ssize_t	pos = VGA::pos(y + _renderPos.y - _scrollY, x + _renderPos.x);
+	if (pos >= 0 && pos < VGA_SIZE)
+		TERM_PTR[pos] = _buffer[VGA::pos(x, y)];
+}
+
 void	Term::incr(const char c) {
 	switch (c) {
 		case '\n':
-			_cur.x = _min.x;
+			_cur.x = 0;
 			_cur.y++;
 			break;
 
 		case '\r':
-			if (_cur.x <= _min.x)
+			if (_cur.x <= 0)
 				_cur.y--;
-			_cur.x = _min.x;
+			_cur.x = 0;
 			break;
 
 		case '\t':
@@ -92,9 +183,9 @@ void	Term::incr(const char c) {
 			break;
 
 		case '\b':
-			if (_cur.x <= _min.x) {
+			if (_cur.x <= 0) {
 				_cur.y--;
-				_cur.x = _max.x;
+				_cur.x = _size.x;
 			}
 			_cur.x--;
 			break;
@@ -104,41 +195,83 @@ void	Term::incr(const char c) {
 			break;
 	}
 
-	if (_cur.x >= _max.x) {
-		_cur.x = _min.x;
+	if (_cur.x >= _size.x) {
+		_cur.x = 0;
 		_cur.y++;
 	}
-	if (_cur.x < _min.x) {
-		_cur.x = _max.x - 1;
-		_cur.y--;
+	if (_cur.y >= _histHeight) {
+		_cur.y = _histHeight - 1;
+		shiftHistUp(1);
 	}
-	if (_cur.y >= _max.y)
-		_cur.y = _min.y;
-	if (_cur.y < _min.y)
-		_cur.y = _max.y - 1;
+}
 
-	_pos = VGA::pos(_cur.y, _cur.x);
+void	Term::shiftHistUp(size_t lines) {
+	for (size_t y = lines; y < _histHeight; y++)
+		for (size_t x = 0; x < _size.x; x++)
+			_writec(x, y - lines, _buffer[VGA::pos(x, y)]);
+	for (size_t x = 0; x < _size.x; x++)
+		_writec(x, _histHeight - 1, ' ' | _color);
 }
 
 void	Term::putc(uint16_t vgaChar) {
-	putc(VGA::get_char(vgaChar), VGA::get_color(vgaChar));
+	putc(VGA::getChar(vgaChar), VGA::getColor(vgaChar));
 }
 
 void	Term::putc(const char c) {
 	uchar_t	w = getWritable(c, 132);
 	if (w)
-		TERM_PTR[_pos] = w | _color;
+		_writec(_cur.x, _cur.y, w | _color);
 	incr(c);
 }
 
 void	Term::putc(const char c, uint16_t vgaColor) {
 	uchar_t	w = getWritable(c, 132);
 	if (w)
-		TERM_PTR[_pos] = w | vgaColor;
+		_writec(_cur.x, _cur.y, w | vgaColor);
 	incr(c);
 }
 
-void	Term::write(const char *str, size_t len) {
+void Term::putn(int nb) {
+	put(itoa(nb));
+}
+
+void Term::putn(int nb, uint16_t vgaColor) {
+	put(itoa(nb), vgaColor);
+}
+
+void Term::putnHex(unsigned int nb) {
+	char hex[] = "0123456789ABCDEF";
+	static char str[11];
+	int i = 9;
+
+	str[10] = '\0';
+
+	while (nb > 0 && i >= 0) {
+		str[i] = hex[nb % 16];
+		nb = nb / 16;
+		i--;
+	}
+	str[i] = 'x';
+	str[--i] = '0';
+	put(&str[i]);
+}
+
+void Term::putnHex(unsigned int nb, uint16_t vgaColor) {
+	char hex[] = "0123456789ABCDEF";
+	static char str[11];
+	int i = 9;
+
+	str[10] = '\0';
+
+	while (nb > 0 && i >= 0) {
+		str[i] = hex[nb % 16];
+		nb = nb / 16;
+		i--;
+	}
+	put(&str[i + 1], vgaColor);
+}
+
+void Term::write(const char *str, size_t len) {
 	for (size_t i = 0; i < len; i++)
 		putc(str[i]);
 }
@@ -169,49 +302,46 @@ void	Term::put(const char *str, uint16_t vgaColor) {
 }
 
 void	Term::fill(uint16_t vgaChar) {
-	for (size_t y = _min.y; y < _max.y; y++)
-		for (size_t x = _min.x; x < _max.x; x++)
-			TERM_PTR[VGA::pos(y, x)] = vgaChar;
+	for (size_t y = 0; y < _histHeight; y++)
+		for (size_t x = 0; x < _size.x; x++)
+			_writec(x, y, vgaChar);
 }
 
 void	Term::fill(const char c) {
-	for (size_t y = _min.y; y < _max.y; y++)
-		for (size_t x = _min.x; x < _max.x; x++)
-			TERM_PTR[VGA::pos(y, x)] = c | _color;
+	for (size_t y = 0; y < _histHeight; y++)
+		for (size_t x = 0; x < _size.x; x++)
+			_writec(x, y, c | _color);
 }
 
 void	Term::clear() {
 	fill(' ');
 }
 
-Vect2<size_t>	Term::getCursor() const {
-	return _cur.clone();
+void	Term::flush() {
+	size_t maxY = Math::min<size_t>(_histHeight, _size.y + _scrollY);
+	for (size_t y = _scrollY; y < maxY; y++)
+		for (size_t x = 0; x < _size.x; x++)
+			_flushc(x, y);
 }
 
-void	Term::setCursor(Vect2<size_t> pos) {
-	_cur = pos;
-	_pos = VGA::pos(_cur.y, _cur.x);
+/* ************************************************************************** */
+
+
+Vect2<size_t>	Term::getSize() const {
+	return _size.clone();
 }
 
-void	Term::resetCursor() {
-	_cur = Vect2<size_t>(_min.x, _min.y);
-	_pos = VGA::pos(_cur.y, _cur.x);
+void	Term::setSize(Vect2<size_t> size) {
+	_size.x = Math::clamp<size_t>(size.x, 1, VGA_WIDTH);
+	_size.y = Math::clamp<size_t>(size.y, 1, VGA_HEIGHT);
 }
 
-Vect2<size_t>	Term::getMin() const {
-	return _min.clone();
+size_t	Term::getHistHeight() const {
+	return _histHeight;
 }
 
-void	Term::setMin(Vect2<size_t> min) {
-	_min = min;
-}
-
-Vect2<size_t>	Term::getMax() const {
-	return _max.clone();
-}
-
-void	Term::setMax(Vect2<size_t> max) {
-	_max = max;
+void	Term::setHistHeight(size_t height) {
+	_histHeight = Math::clamp<size_t>(height, 1, TERM_MAX_HIST_HEIGHT);
 }
 
 uint16_t	Term::getColor() const {
@@ -220,6 +350,70 @@ uint16_t	Term::getColor() const {
 
 void	Term::setColor(uint16_t color) {
 	_color = color;
+}
+
+Vect2<size_t>	Term::getCursor() const {
+	return _cur.clone();
+}
+
+void	Term::setCursor(Vect2<size_t> pos) {
+	_cur.x = Math::clamp<size_t>(pos.x, 0, _size.x - 1);
+	_cur.y = Math::clamp<size_t>(pos.y, 0, _size.y - 1);
+}
+
+void	Term::moveCursor(int dx, int dy) {
+	setCursor(Vect2<size_t>(
+		Math::clamp<ssize_t>(_cur.x + dx, 0, _size.x - 1),
+		Math::clamp<ssize_t>(_cur.y + dy, 0, _size.y - 1)
+	));
+}
+
+void	Term::resetCursor() {
+	_cur.x = 0;
+	_cur.y = 0;
+}
+
+Vect2<size_t>	Term::getRenderPos() const {
+	return _renderPos.clone();
+}
+
+void	Term::setRenderPos(Vect2<size_t> renderPos) {
+	_renderPos.x = Math::clamp<size_t>(renderPos.x, 0, VGA_WIDTH);
+	_renderPos.y = Math::clamp<size_t>(renderPos.y, 0, VGA_HEIGHT);
+}
+
+size_t	Term::getScrollY() const {
+	return _scrollY;
+}
+
+void	Term::setScrollY(size_t scrollY) {
+	_scrollY = Math::clamp<size_t>(scrollY, 0, _histHeight - _size.y);
+}
+
+size_t	Term::incrScrollY(ssize_t delta) {
+	setScrollY(_scrollY + delta);
+	return _scrollY;
+}
+
+size_t	Term::scrollToCursor() {
+	if (_cur.y < _scrollY)
+		_scrollY = _cur.y;
+	else if (_cur.y >= _scrollY + _size.y)
+		_scrollY = _cur.y - _size.y + 1;
+	return _scrollY;
+}
+
+void	Term::resetScrollY() {
+	_scrollY = 0;
+}
+
+bool	Term::isRendering() const {
+	return _rendering;
+}
+
+bool	Term::setRendering(bool enable) {
+	_rendering = enable;
+	return _rendering;
 }
 
 
@@ -236,4 +430,49 @@ uchar_t	Term::getWritable(const uchar_t c, const uchar_t replace) {
 	if (c > 128)
 		return c - 128; // Special chars in range: [1; 31]
 	return c; // Classic printable char
+}
+
+void Term::printkSpecifier(const char *fmt, void **arg) {
+	switch (*fmt) {
+		case 'c':
+			putc((char)*(char *)(arg));
+			break;
+		case 's':
+			put((const char *)*arg);
+			break;
+		case 'p':
+			put("0x");
+			putnHex((unsigned int)arg);
+			break;
+		case 'd':
+		case 'i':
+			putn(*(int *)arg);
+			break;
+		case 'u':
+			putn(*(unsigned int *)*arg);
+			break;
+		case 'x':
+			putnHex(*(unsigned int *)*arg);
+			break;
+		case '%':
+			putc('%');
+			break;
+	}
+}
+
+void Term::printk(const char *fmt, ...) {
+	int i = 0;
+	void **spec = (void **)&fmt;
+	spec++;
+
+	while (fmt[i]) {
+		if (fmt[i] == '%') {
+			printkSpecifier(&fmt[i + 1], spec);
+			i++;
+			if (fmt[i] != '%')
+				spec++;
+		} else
+			putc(fmt[i]);
+		i++;
+	}
 }

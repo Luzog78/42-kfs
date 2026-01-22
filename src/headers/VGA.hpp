@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:14:51 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/21 02:00:14 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/22 08:24:13 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #define VGA_WIDTH	80
 #define VGA_HEIGHT	25
 #define VGA_SIZE	2000
-#define VGA_MEMORY	0xB8000
+#define VGA_MEMORY	0xb8000
 
 #define VGA_C_BLACK			0
 #define VGA_C_BLUE			1
@@ -43,13 +43,13 @@ class VGA {
 		static uint16_t			character(uint8_t vga_fg, uint8_t vga_bg);
 		static uint16_t			character(uchar_t c, uint8_t vga_fg, uint8_t vga_bg);
 
-		static uchar_t			get_char(uint8_t vga_char);
-		static uint16_t			get_color(uint8_t vga_char);
-		static uint8_t			get_fg(uint8_t vga_char);
-		static uint8_t			get_bg(uint8_t vga_char);
+		static uchar_t			getChar(uint8_t vga_char);
+		static uint16_t			getColor(uint8_t vga_char);
+		static uint8_t			getFg(uint8_t vga_char);
+		static uint8_t			getBg(uint8_t vga_char);
 
-		static size_t			pos(size_t row, size_t col);
-		static Vect2<size_t>	sop(size_t pos);
+		static ssize_t			pos(ssize_t row, ssize_t col);
+		static Vect2<ssize_t>	sop(ssize_t pos);
 };
 
 #endif

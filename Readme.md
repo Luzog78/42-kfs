@@ -128,7 +128,7 @@ For it, wee need 3 things:
 - [ ] Scroll support
 - [ ] Cursor support
 - [x] Color support
-- [ ] `printf` / `printk` function
+- [x] `printf` / `printk` function
 - [ ] Handle keyboard input
 - [ ] Multiscreens + Keyboard Shortcuts
 
@@ -137,10 +137,91 @@ For it, wee need 3 things:
 
 ## Changelog
 
+<br><br>
+
+### v1.1.3 - + | kfs-1: Term history and scroll, stack smash checker
+
+---
+
+***[2026-01-22]***
+
+Added Term history and scroll functions:
+```c++
+class Term {
+	// ...
+
+	public:
+		// ...
+
+		void	shiftHistUp(size_t lines);
+		void	flush();
+
+		// ...
+
+		Vect2<size_t>	getSize() const;
+		void			setSize(Vect2<size_t> size);
+
+		size_t			getHistHeight() const;
+		void			setHistHeight(size_t height);
+
+		uint16_t		getColor() const;
+		void			setColor(uint16_t color);
+
+		Vect2<size_t>	getCursor() const;
+		void			setCursor(Vect2<size_t> pos);
+		void			moveCursor(int dx, int dy);
+		void			resetCursor();
+
+		Vect2<size_t>	getRenderPos() const;
+		void			setRenderPos(Vect2<size_t> renderPos);
+
+		size_t			getScrollY() const;
+		void			setScrollY(size_t scrollY);
+		size_t			incrScrollY(ssize_t delta);
+		size_t			scrollToCursor();
+		void			resetScrollY();
+
+		bool			isRendering() const;
+		bool			setRendering(bool enable);
+
+		// ...
+}
+```
+
+Because it was really expensive in stack memory, the stack size has increased from 16 KiB to 64 KiB:
+```asm
+stack_bottom:
+	resb 65536	; 64 KiB stack
+stack_top:
+```
+
+To check if the stack is being smashed, we can use a simple canary value placed at the end of the stack. If the canary value is changed, we know the stack has been smashed:
+```asm
+global stack_guard
+stack_guard:
+	resb 4		; Reserve space for stack canary for stack smashing protection
+stack_bottom:
+
+; ...
+
+_start:
+	mov dword [stack_guard], 0xdeadbeef	; Initialize stack canary
+```
+```c++
+extern "C" uint32_t	stack_guard;
+
+extern "C" bool	stack_check(bool halt) {
+	if (stack_guard == 0xdeadbeef)
+		return true; // Stack intact
+	// Smashed!
+	return false;
+}
+```
+
 
 <br><br>
 
-### v1.1.1 - + | Readme
+### v1.1.2 - + | Readme
 
 ---
 
@@ -150,6 +231,25 @@ Added a Readme.
 
 Not much to say.
 
+
+<br><br>
+
+### v1.1.1 - feat: printk ok
+
+---
+
+***[2026-01-21]***
+
+Added printk to Term class.
+
+```cpp
+void printk(const char *fmt, ...) {
+	void **spec = (void **)&fmt;
+	spec++;
+}
+```
+
+The addresses of the arguments follow each other in memory, so we can access the arguments simply by incrementing the address of the first argument.
 
 <br><br>
 
