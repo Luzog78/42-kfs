@@ -13,10 +13,11 @@
 section .multiboot
 
 header_start:
-	dd 0xe85250d6														; Magic number
-	dd 0x00																; Architecture: Protected mode i386
-	dd header_end - header_start										; Header length
-	dd 0x100000000 - (0xe85250d6 + 0x00 + (header_end - header_start))	; Checksum
+	dd 0xe85250d6							; Magic number
+	dd 0x00									; Architecture: Protected mode i386
+	dd header_end - header_start			; Header length
+	dd 0x100000000 - (0xe85250d6 + 0x00 \
+			+ (header_end - header_start))	; Checksum
 
 	; End tag
 	dw 0x00
@@ -33,9 +34,12 @@ section .bss
 
 align 4
 
-stack_top:
-	resb 16384	; 16 KiB stack
+global stack_guard
+stack_guard:
+	resb 4		; Reserve space for stack canary for stack smashing protection
 stack_bottom:
+	resb 65536	; 64 KiB stack
+stack_top:
 
 
 ; **************************************************************************** ;
@@ -46,21 +50,22 @@ section .text
 global _start
 
 extern main
-extern start_ctors			; (void (*)()): Start of C++ global constructors
-extern end_ctors			; (void (*)()): End of C++ global constructors
+extern start_ctors						; (void (*)()): Start of C++ global constructors
+extern end_ctors						; (void (*)()): End of C++ global constructors
 
 _start:
-	mov esp, stack_bottom	; Set up stack pointer
+	mov dword [stack_guard], 0xdeadbeef	; Initialize stack canary
+	mov esp, stack_top					; Set up stack pointer
 
 	; Call global constructors
-	mov ebx, start_ctors	; ebx = (void *) start_ctors
-	jmp .test_ctor			; goto .test_ctor
+	mov ebx, start_ctors				; ebx = (void *) start_ctors
+	jmp .test_ctor						; goto .test_ctor
 	.call_ctor:
-		call [ebx]			; (*ebx)() --> Call constructor
-		add ebx, 4			; ebx += sizeof(void *)
+		call [ebx]						; (*ebx)() --> Call constructor
+		add ebx, 4						; ebx += sizeof(void *)
 	.test_ctor:
-		cmp ebx, end_ctors	; if (ebx < (void *) end_ctors)
-		jb .call_ctor		;   goto .call_ctor
+		cmp ebx, end_ctors				; if (ebx < (void *) end_ctors)
+		jb .call_ctor					;   goto .call_ctor
 
 	call main
 	hlt

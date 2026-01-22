@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/21 13:19:09 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 08:24:41 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ size_t strlen(const char *str) {
 	return len;
 }
 
-static int	len_number(int n)
-{
+static int	numberLen(int n) {
 	int	len;
 
 	len = 0;
@@ -28,32 +27,27 @@ static int	len_number(int n)
 		return (1);
 	if (n < 0 && n > -10)
 		return (2);
-	if (n < 0)
-	{
+	if (n < 0) {
 		len++;
 		n = -n;
 	}
-	while (n > 0)
-	{
+	while (n > 0) {
 		n = n / 10;
 		len ++;
 	}
 	return (len);
 }
 
-char	*itoa(int n)
-{
+char	*itoa(int n) {
 	static char	str[7];
-	int			i = len_number(n) - 1;
+	int			i = numberLen(n) - 1;
 
-	if (n < 0)
-	{
+	if (n < 0) {
 		n = -n;
 		str[0] = '-';
 	}
 	str[i + 1] = '\0';
-	while (n > 0)
-	{
+	while (n > 0) {
 		str[i] = '0' + (n % 10);
 		n = n / 10;
 		i--;
