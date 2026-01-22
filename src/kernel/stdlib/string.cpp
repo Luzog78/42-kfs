@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/22 13:19:15 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 16:46:42 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ char	*itoa(int n) {
 	static char	str[7];
 	int			i = numberLen(n) - 1;
 
+	if (n == 0) {
+		str[0] = '0';
+		str[1] = '\0';
+		return (str);
+	}
 	if (n < 0) {
 		n = -n;
 		str[0] = '-';

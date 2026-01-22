@@ -130,12 +130,20 @@ For it, wee need 3 things:
 - [x] Color support
 - [x] `printf` / `printk` function
 - [x] Handle keyboard input
-- [ ] Multiscreens + Keyboard Shortcuts
+- [x] Multiscreens + Keyboard Shortcuts
 
 
 <br><br>
 
 ## Changelog
+
+<br><br>
+
+### v1.1.5 - + | feat: multiscreen
+
+Added multiscreens support, it is possible to navigate between the different screens using Ctrl + [1–3].
+
+Added defines to clarify the code.
 
 <br><br>
 
