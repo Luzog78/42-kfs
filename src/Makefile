@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+         #
+#    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/22 11:15:23 by bsavinel         ###   ########.fr        #
+#    Updated: 2026/01/22 19:00:25 by luzog78          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CPP_SRC			:=	src/kernel/main.cpp \
 					src/kernel/stdlib/VGA.cpp \
 					src/kernel/stdlib/Term.cpp \
 					src/kernel/stdlib/keyboard.cpp \
-					src/kernel/stdlib/keyboard_map.cpp \
+					src/kernel/stdlib/keyboardMap.cpp \
 					src/kernel/stdlib/string.cpp
 CPP_OBJ			:= $(CPP_SRC:.cpp=.cpp.o)
 

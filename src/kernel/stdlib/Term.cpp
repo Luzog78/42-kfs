@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 12:11:02 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 19:16:21 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,25 +144,33 @@ void	Term::_init() {
 	if (_color) {
 		bool rendering = _rendering;
 		_rendering = false;
-		clear();
+		fill(_color);
 		_rendering = rendering;
 	}
 }
 
 void	Term::_writec(size_t x, size_t y, uint16_t vgaChar) {
-	_buffer[VGA::pos(x, y)] = vgaChar;
+	_buffer[VGA::pos(y, x)] = vgaChar;
 
 	if (_rendering) {
-		ssize_t	pos = VGA::pos(y + _renderPos.y - _scrollY, x + _renderPos.x);
-		if (pos >= 0 && pos < VGA_SIZE)
+		Vect2<ssize_t>	loc = Vect2<ssize_t>(x, y - _scrollY);
+		if (loc.x < 0 || loc.x >= (ssize_t) _size.x
+				|| loc.y < 0 || loc.y >= (ssize_t) _size.y)
+			return;
+		ssize_t	pos = VGA::pos(loc.y + _renderPos.y, loc.x + _renderPos.x);
+		if (pos < VGA_SIZE) // pos >= 0 always true since loc.x and loc.y are >= 0
 			TERM_PTR[pos] = vgaChar;
 	}
 }
 
 void	Term::_flushc(size_t x, size_t y) {
-	ssize_t	pos = VGA::pos(y + _renderPos.y - _scrollY, x + _renderPos.x);
+	Vect2<ssize_t>	loc = Vect2<ssize_t>(x, y - _scrollY);
+	if (loc.x < 0 || loc.x >= (ssize_t) _size.x
+			|| loc.y < 0 || loc.y >= (ssize_t) _size.y)
+		return;
+	ssize_t	pos = VGA::pos(loc.y + _renderPos.y, loc.x + _renderPos.x);
 	if (pos >= 0 && pos < VGA_SIZE)
-		TERM_PTR[pos] = _buffer[VGA::pos(x, y)];
+		TERM_PTR[pos] = _buffer[VGA::pos(y, x)];
 }
 
 void	Term::incr(const char c) {
@@ -208,7 +216,7 @@ void	Term::incr(const char c) {
 void	Term::shiftHistUp(size_t lines) {
 	for (size_t y = lines; y < _histHeight; y++)
 		for (size_t x = 0; x < _size.x; x++)
-			_writec(x, y - lines, _buffer[VGA::pos(x, y)]);
+			_writec(x, y - lines, _buffer[VGA::pos(y, x)]);
 	for (size_t x = 0; x < _size.x; x++)
 		_writec(x, _histHeight - 1, ' ' | _color);
 }
@@ -232,81 +240,87 @@ void	Term::putc(const char c, uint16_t vgaColor) {
 }
 
 void Term::putn(int nb) {
-	put(itoa(nb));
+	char	buffer[7];
+
+	itoa(nb, buffer);
+	put(buffer);
 }
 
 void Term::putn(int nb, uint16_t vgaColor) {
-	put(itoa(nb), vgaColor);
+	char	buffer[7];
+
+	itoa(nb, buffer);
+	put(buffer, vgaColor);
 }
 
-void Term::putnHex(int nb, bool maj) {
-	char hexmaj[] = "0123456789ABCDEF";
-	char hexmin[] = "0123456789abcdef";
+void Term::putnHex(int nb, bool caps) {
+	char upperHex[] = "0123456789ABCDEF";
+	char lowerHex[] = "0123456789abcdef";
 	static char str[11];
 	int i = 9;
 
 	str[10] = '\0';
 
 	for (;nb > 0 && i >= 0; i--) {
-		if (maj)
-			str[i] = hexmaj[nb % 16];
+		if (caps)
+			str[i] = upperHex[nb % 16];
 		else
-			str[i] = hexmin[nb % 16];
+			str[i] = lowerHex[nb % 16];
 		nb = nb / 16;
 	}
 	put(&str[i + 1]);
 }
 
-void Term::putnHex(int nb, bool maj, uint16_t vgaColor) {
-	char hexmaj[] = "0123456789ABCDEF";
-	char hexmin[] = "0123456789abcdef";
+void Term::putnHex(int nb, bool caps, uint16_t vgaColor) {
+	char upperHex[] = "0123456789ABCDEF";
+	char lowerHex[] = "0123456789abcdef";
 	static char str[11];
 	int i = 9;
 
 	str[10] = '\0';
 
 	while (nb > 0 && i >= 0) {
-		if (maj)
-			str[i] = hexmaj[nb % 16];
+		if (caps)
+			str[i] = upperHex[nb % 16];
 		else
-			str[i] = hexmin[nb % 16];
+			str[i] = lowerHex[nb % 16];
 		nb = nb / 16;
 		i--;
 	}
 	put(&str[i + 1], vgaColor);
 }
 
-void Term::putnHex(unsigned int nb, bool maj) {
-	char hexmaj[] = "0123456789ABCDEF";
-	char hexmin[] = "0123456789abcdef";
+void Term::putnHex(unsigned int nb, bool caps) {
+	char upperHex[] = "0123456789ABCDEF";
+	char lowerHex[] = "0123456789abcdef";
 	static char str[11];
 	int i = 9;
 
 	str[10] = '\0';
 
 	for (;nb > 0 && i >= 0; i--) {
-		if (maj)
-			str[i] = hexmaj[nb % 16];
+		if (caps)
+			str[i] = upperHex[nb % 16];
 		else
-			str[i] = hexmin[nb % 16];
+			str[i] = lowerHex[nb % 16];
 		nb = nb / 16;
 	}
 	put(&str[i + 1]);
 }
 
-void Term::putnHex(unsigned int nb, bool maj, uint16_t vgaColor) {
-	char hexmaj[] = "0123456789ABCDEF";
-	char hexmin[] = "0123456789abcdef";
+void Term::putnHex(unsigned int nb, bool caps, uint16_t vgaColor) {
+	char upperHex[] = "0123456789ABCDEF";
+	char lowerHex[] = "0123456789abcdef";
 	static char str[11];
 	int i = 9;
 
 	str[10] = '\0';
 
 	while (nb > 0 && i >= 0) {
-		if (maj)
-			str[i] = hexmaj[nb % 16];
+		if (caps)
+			str[i] = upperHex[nb % 16];
 		else
-			str[i] = hexmin[nb % 16];
+			str[i] = lowerHex[nb % 16];
 		nb = nb / 16;
 		i--;
 	}
@@ -437,11 +451,16 @@ size_t	Term::incrScrollY(ssize_t delta) {
 	return _scrollY;
 }
 
-size_t	Term::scrollToCursor() {
-	if (_cur.y < _scrollY)
+size_t	Term::scrollToCursor(bool flushIfNeeded) {
+	if (_cur.y < _scrollY) {
 		_scrollY = _cur.y;
-	else if (_cur.y >= _scrollY + _size.y)
+		if (flushIfNeeded)
+			flush();
+	} else if (_cur.y >= _scrollY + _size.y) {
 		_scrollY = _cur.y - _size.y + 1;
+		if (flushIfNeeded)
+			flush();
+	}
 	return _scrollY;
 }
 

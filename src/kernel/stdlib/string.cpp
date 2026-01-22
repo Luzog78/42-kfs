@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/22 16:46:42 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 18:50:38 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,26 +38,40 @@ static int	numberLen(int n) {
 	return (len);
 }
 
-char	*itoa(int n) {
-	static char	str[7];
-	int			i = numberLen(n) - 1;
-
+void	itoa(int n, char buffer[12]) {
 	if (n == 0) {
-		str[0] = '0';
-		str[1] = '\0';
-		return (str);
+		buffer[0] = '0';
+		buffer[1] = '\0';
+		return ;
 	}
+	if (n == -2147483648) {
+		buffer[0] = '-';
+		buffer[1] = '2';
+		buffer[2] = '1';
+		buffer[3] = '4';
+		buffer[4] = '7';
+		buffer[5] = '4';
+		buffer[6] = '8';
+		buffer[7] = '3';
+		buffer[8] = '6';
+		buffer[9] = '4';
+		buffer[10] = '8';
+		buffer[11] = '\0';
+		return ;
+	}
+
+	int	i = numberLen(n) - 1;
+
 	if (n < 0) {
 		n = -n;
-		str[0] = '-';
+		buffer[0] = '-';
 	}
-	str[i + 1] = '\0';
+	buffer[i + 1] = '\0';
 	while (n > 0) {
-		str[i] = '0' + (n % 10);
+		buffer[i] = '0' + (n % 10);
 		n = n / 10;
 		i--;
 	}
-	return (str);
 }
 
 bool isalpha(char c) {

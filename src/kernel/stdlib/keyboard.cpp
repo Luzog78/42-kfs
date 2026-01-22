@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   keyboard.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 16:36:17 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/22 17:46:39 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 19:03:19 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,44 +22,46 @@ int	shortcutManger(unsigned char scancode, char *pressed, int nbpress) {
 	return SHORTCUT_NONE;
 }
 
-void	pressPrint(Term *term, unsigned char scancode, bool maj) {
-	if (maj)
-		term->printk("%c", keyboardMaj_map[scancode]);
+void	pressPrint(Term *term, unsigned char scancode, bool caps) {
+	if (caps)
+		term->putc((char) upperKeyboardMap[scancode]);
 	else
-		term->printk("%c", keyboard_map[scancode]);
+		term->putc((char) keyboardMap[scancode]);
+	term->scrollToCursor();
 }
 
-int	keyboard_handler(Term *term) {
+int	keyboardHandler(Term *term) {
 	unsigned char	scancode;
 	static char		pressed[128];
 	static int		nbpress = 0;
-	static bool		maj = false;
+	static bool		caps = false;
 
 	scancode = read_port(PS_2);
-	if (scancode == KEYBOARD_ACK) {} // Ignore ACK from keyboard
-	else if (!(scancode & UNPRESSED_MASK)) {
+	if (scancode == KEYBOARD_ACK) {
+		// Ignore ACK from keyboard
+	} else if (!(scancode & UNPRESSED_MASK)) {
 		if (!pressed[scancode])
 			nbpress++;
 		pressed[scancode] = 1;
 
 		// Flush the PS/2 port
 		write_port(PS_2, 0);
-		
-		if (!pressed[KEYBOARD_CTRL] && !pressed[KEYBOARD_ALT] && keyboard_map[scancode])
-			pressPrint(term, scancode, maj);
+
+		if (!pressed[KEYBOARD_CTRL] && !pressed[KEYBOARD_ALT] && keyboardMap[scancode])
+			pressPrint(term, scancode, caps);
 		if (scancode == KEYBOARD_LEFTSHIFT || scancode == KEYBOARD_RIGHTSHIFT || scancode == KEYBOARD_CAPSLOCK)
-			maj = !maj;
+			caps = !caps;
 		return shortcutManger(scancode, pressed, nbpress);
 	} else {
 		// Remove the unpressed mask
 		scancode &= ~UNPRESSED_MASK;
-		
+
 		if (pressed[scancode])
 			nbpress--;
 		pressed[scancode] = 0;
-		
+
 		if (scancode == KEYBOARD_RIGHTSHIFT || scancode == KEYBOARD_LEFTSHIFT)
-			maj = !maj;
+			caps = !caps;
 
 		// Flush the PS/2 port
 		write_port(PS_2, 0);

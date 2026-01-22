@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 15:12:23 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 19:16:39 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,10 +105,10 @@ class Term {
 		void	putn(int nb);
 		void	putn(int nb, uint16_t vgaColor);
 
-		void	putnHex(int nb, bool maj = false);
-		void	putnHex(int nb, bool maj, uint16_t vgaColor);
-		void	putnHex(unsigned int nb, bool maj = false);
-		void	putnHex(unsigned int nb, bool maj, uint16_t vgaColor);
+		void	putnHex(int nb, bool caps = false);
+		void	putnHex(int nb, bool caps, uint16_t vgaColor);
+		void	putnHex(unsigned int nb, bool caps = false);
+		void	putnHex(unsigned int nb, bool caps, uint16_t vgaColor);
 
 		void	fill(uint16_t vgaChar);
 		void	fill(const char c);
@@ -136,7 +136,7 @@ class Term {
 		size_t			getScrollY() const;
 		void			setScrollY(size_t scrollY);
 		size_t			incrScrollY(ssize_t delta);
-		size_t			scrollToCursor();
+		size_t			scrollToCursor(bool flushIfNeeded = true);
 		void			resetScrollY();
 
 		bool			isRendering() const;

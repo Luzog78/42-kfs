@@ -125,7 +125,7 @@ For it, wee need 3 things:
 
 <br>
 
-- [ ] Scroll support
+- [/] Scroll support
 - [ ] Cursor support
 - [x] Color support
 - [x] `printf` / `printk` function
@@ -139,15 +139,61 @@ For it, wee need 3 things:
 
 <br><br>
 
-### v1.1.5 - + | feat: multiscreen
+### v1.1.6 - ~ | kfs-1: Term fixed scroll and render issues
+
+---
+
+***[2026-01-22]***
+
+Windowed terminals (terminal that are smaller than the VGA screen) are now fully displayable, and scrollable (using functions).
+
+<br>
+
+Because we can't allocate memory on the heap, the classic itoa does not work everytime:
+```c++
+char	*itoa(int n) {
+	uchar_t	buffer[12];
+	// ...
+	return buffer;
+}
+```
+
+It works sometimes, but not always, because after the end of the function,
+ the buffer no longer belongs to anyone : it is inside of free-to-use memory.<br>
+If this memory is not overwritten, it can still be accessed, but ***this is not guaranteed***...
+
+So we changed it to use a static buffer:
+```c++
+void	itoa(int n, uchar_t buffer[12]) {
+	// ...
+}
+```
+
+<br>
+
+Some parts of the code were modified to conform to the project's coding style.
+
+
+<br><br>
+
+### v1.1.5 - feat: multiscreens
+
+---
+
+***[2026-01-22]***
 
 Added multiscreens support, it is possible to navigate between the different screens using Ctrl + [1–3].
 
 Added defines to clarify the code.
 
+
 <br><br>
 
-### v1.1.4 - + | Merge feat/keyboard
+### v1.1.4 - feat: add shortcut and maj character print on screen
+
+---
+
+***[2026-01-22]***
 
 To read the keyboard, it is necessary to add assembly code in order to read from and write to a port.
 
@@ -180,6 +226,7 @@ unpresskey = scancode & ~0x80;
 ```
 
 To add shortcuts, it is enough to map them in the ShortcutManager and define a return code; this code will then be propagated up to the main loop.
+
 
 <br><br>
 

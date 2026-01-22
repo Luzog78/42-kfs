@@ -33,6 +33,36 @@ class Vect2 {
 		};
 		~Vect2() {};
 
+		template<typename U>
+		Vect2 operator+(const Vect2<U> &other) const {
+			return Vect2(x + other.x, y + other.y);
+		};
+
+		template<typename U>
+		Vect2 operator-(const Vect2<U> &other) const {
+			return Vect2(x - other.x, y - other.y);
+		};
+
+		template<typename U>
+		Vect2 operator*(const Vect2<U> &other) const {
+			return Vect2(x * other.x, y * other.y);
+		};
+
+		template<typename U>
+		Vect2 operator*(const U &scalar) const {
+			return Vect2(x * scalar, y * scalar);
+		};
+
+		template<typename U>
+		Vect2 operator/(const Vect2<U> &other) const {
+			return Vect2(x / other.x, y / other.y);
+		};
+
+		template<typename U>
+		Vect2 operator/(const U &scalar) const {
+			return Vect2(x / scalar, y / scalar);
+		};
+
 		Vect2 clone() const {
 			return Vect2(x, y);
 		};

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 11:15:08 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 18:35:44 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef void				*ptr_t;
 extern "C" uint32_t	stack_guard;
 extern "C" bool		stack_check(bool halt);
 
+#include "limits.hpp"
 #include "string.hpp"
 #include "Math.hpp"
 #include "Vect2.hpp"
