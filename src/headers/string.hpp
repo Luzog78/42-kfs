@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/21 15:13:18 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/01/22 13:19:23 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,6 @@
 
 char	*itoa(int n);
 size_t	strlen(const char *str);
+bool	isalpha(char c);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 08:23:59 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/22 12:11:02 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,32 +239,74 @@ void Term::putn(int nb, uint16_t vgaColor) {
 	put(itoa(nb), vgaColor);
 }
 
-void Term::putnHex(unsigned int nb) {
-	char hex[] = "0123456789ABCDEF";
+void Term::putnHex(int nb, bool maj) {
+	char hexmaj[] = "0123456789ABCDEF";
+	char hexmin[] = "0123456789abcdef";
+	static char str[11];
+	int i = 9;
+
+	str[10] = '\0';
+
+	for (;nb > 0 && i >= 0; i--) {
+		if (maj)
+			str[i] = hexmaj[nb % 16];
+		else
+			str[i] = hexmin[nb % 16];
+		nb = nb / 16;
+	}
+	put(&str[i + 1]);
+}
+
+void Term::putnHex(int nb, bool maj, uint16_t vgaColor) {
+	char hexmaj[] = "0123456789ABCDEF";
+	char hexmin[] = "0123456789abcdef";
 	static char str[11];
 	int i = 9;
 
 	str[10] = '\0';
 
 	while (nb > 0 && i >= 0) {
-		str[i] = hex[nb % 16];
+		if (maj)
+			str[i] = hexmaj[nb % 16];
+		else
+			str[i] = hexmin[nb % 16];
 		nb = nb / 16;
 		i--;
 	}
-	str[i] = 'x';
-	str[--i] = '0';
-	put(&str[i]);
+	put(&str[i + 1], vgaColor);
 }
 
-void Term::putnHex(unsigned int nb, uint16_t vgaColor) {
-	char hex[] = "0123456789ABCDEF";
+void Term::putnHex(unsigned int nb, bool maj) {
+	char hexmaj[] = "0123456789ABCDEF";
+	char hexmin[] = "0123456789abcdef";
+	static char str[11];
+	int i = 9;
+
+	str[10] = '\0';
+
+	for (;nb > 0 && i >= 0; i--) {
+		if (maj)
+			str[i] = hexmaj[nb % 16];
+		else
+			str[i] = hexmin[nb % 16];
+		nb = nb / 16;
+	}
+	put(&str[i + 1]);
+}
+
+void Term::putnHex(unsigned int nb, bool maj, uint16_t vgaColor) {
+	char hexmaj[] = "0123456789ABCDEF";
+	char hexmin[] = "0123456789abcdef";
 	static char str[11];
 	int i = 9;
 
 	str[10] = '\0';
 
 	while (nb > 0 && i >= 0) {
-		str[i] = hex[nb % 16];
+		if (maj)
+			str[i] = hexmaj[nb % 16];
+		else
+			str[i] = hexmin[nb % 16];
 		nb = nb / 16;
 		i--;
 	}
@@ -449,10 +491,13 @@ void Term::printkSpecifier(const char *fmt, void **arg) {
 			putn(*(int *)arg);
 			break;
 		case 'u':
-			putn(*(unsigned int *)*arg);
+			putn(*(unsigned int *)arg);
 			break;
 		case 'x':
-			putnHex(*(unsigned int *)*arg);
+			putnHex(*(int *)arg);
+			break;
+		case 'X':
+			putnHex(*(int *)arg, true);
 			break;
 		case '%':
 			putc('%');

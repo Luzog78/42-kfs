@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 08:33:58 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/22 12:10:29 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,10 @@ class Term {
 		void	putn(int nb);
 		void	putn(int nb, uint16_t vgaColor);
 
-		void	putnHex(unsigned int nb);
-		void	putnHex(unsigned int nb, uint16_t vgaColor);
+		void	putnHex(int nb, bool maj = false);
+		void	putnHex(int nb, bool maj, uint16_t vgaColor);
+		void	putnHex(unsigned int nb, bool maj = false);
+		void	putnHex(unsigned int nb, bool maj, uint16_t vgaColor);
 
 		void	fill(uint16_t vgaChar);
 		void	fill(const char c);
@@ -139,9 +141,11 @@ class Term {
 
 		bool			isRendering() const;
 		bool			setRendering(bool enable);
-
-		void	printkSpecifier(const char *fmt, void **arg);
+	
 		void	printk(const char *fmt, ...);
+
+	private:
+		void	printkSpecifier(const char *fmt, void **arg);
 
 };
 

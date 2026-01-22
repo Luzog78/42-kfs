@@ -129,13 +129,49 @@ For it, wee need 3 things:
 - [ ] Cursor support
 - [x] Color support
 - [x] `printf` / `printk` function
-- [ ] Handle keyboard input
+- [x] Handle keyboard input
 - [ ] Multiscreens + Keyboard Shortcuts
 
 
 <br><br>
 
 ## Changelog
+
+<br><br>
+
+### v1.1.4 - + | Merge feat/keyboard
+
+To read the keyboard, it is necessary to add assembly code in order to read from and write to a port.
+
+```asm
+read_port:
+    mov edx, [esp + 4]
+    in al, dx
+    ret
+
+write_port:
+    mov   edx, [esp + 4]
+    mov   al, [esp + 4 + 4]
+    out   dx, al
+    ret
+```
+
+To handle PS/2 (which is what the keyboard uses), you need to look at port 0x60.
+
+In the keyboard response, if the last bit of the scan code is set to 1, it means the key has been released; otherwise, it is pressed or is being pressed.
+
+After reading the code, it is important to reset it to 0, because when using polling we are running an infinite loop that reads the port, and we do not want to repeatedly read the same information. The keyboard constantly signals that it is connected by filling the port with 250.
+
+Each key is numbered from 0 to 90 (in QWERTY), so a lookup table is required to map the scanned key to the corresponding character.
+
+Do not forget to remove the unpressed flag if you want to use the code to detect the key that has just been released.
+
+```c
+int scancode = read_port(0x60);
+unpresskey = scancode & ~0x80;
+```
+
+To add shortcuts, it is enough to map them in the ShortcutManager and define a return code; this code will then be propagated up to the main loop.
 
 <br><br>
 

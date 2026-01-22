@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/22 08:24:41 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/22 13:19:15 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,8 @@ char	*itoa(int n) {
 		i--;
 	}
 	return (str);
+}
+
+bool isalpha(char c) {
+	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 }
