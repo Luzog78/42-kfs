@@ -125,8 +125,8 @@ For it, wee need 3 things:
 
 <br>
 
-- [/] Scroll support
-- [ ] Cursor support
+- [x] Scroll support
+- [/] Cursor support
 - [x] Color support
 - [x] `printf` / `printk` function
 - [x] Handle keyboard input
@@ -136,6 +136,53 @@ For it, wee need 3 things:
 <br><br>
 
 ## Changelog
+
+<br><br>
+
+### v1.1.7 - + | kfs-1: Terminal switching, VGA Cursor, Whitespace fill, lltox/ulltox
+
+---
+
+***[2026-01-22]***
+
+Switch between different terminal screens using keyboard shortcuts `Ctrl/Alt + [1–3]`.
+
+<br>
+
+A cursor is now displayed in the active terminal.
+
+To set it, we need to edit the VGA registers.
+
+According to the wiki, we need to modify the [CRT Controller Registers](http://www.osdever.net/FreeVGA/vga/crtcreg.htm) (`0x3D4` for index and `0x3D5` for data).
+
+To enable or disable the cursor, we need to set the 5th bit (Cursor Disable) of the [Cursor Start Register](http://www.osdever.net/FreeVGA/vga/crtcreg.htm#0A).
+
+To set the location of the cursor, we need to modify the [Cursor Location High Register](http://www.osdever.net/FreeVGA/vga/crtcreg.htm#0E) and the [Cursor Location Low Register](http://www.osdever.net/FreeVGA/vga/crtcreg.htm#0F) to respectively set the high and low bytes of the cursor position.
+
+The code looks something like this:
+```c++
+write_port(0x3D4, 0x0A);
+write_port(0x3D5, read_port(0x3D5) & 0b11011111); // Show cursor
+write_port(0x3D5, read_port(0x3D5) | 0b00100000); // Hide cursor
+
+write_port(0x3D4, 0x0E);
+write_port(0x3D5, (pos >> 8) & 0xff); // Set cursor high byte
+write_port(0x3D4, 0x0F);
+write_port(0x3D5, pos & 0xff); // Set cursor low byte
+```
+
+<br>
+
+A line break, a backtick or a tab are now overriting with whitespaces the old displayed characters.
+
+<br>
+
+`lltox` and `ulltox` are now functions in their own right, allowing for better code organization and readability.
+
+<br>
+
+Some parts of the code were modified to conform to the project's coding style.
+
 
 <br><br>
 

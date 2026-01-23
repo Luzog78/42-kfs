@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 16:36:17 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/22 19:03:19 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 13:18:35 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,15 @@ int	keyboardHandler(Term *term) {
 			nbpress++;
 		pressed[scancode] = 1;
 
-		// Flush the PS/2 port
-		write_port(PS_2, 0);
-
+		write_port(PS_2, 0); // Flush the PS/2 port
+		
 		if (!pressed[KEYBOARD_CTRL] && !pressed[KEYBOARD_ALT] && keyboardMap[scancode])
 			pressPrint(term, scancode, caps);
 		if (scancode == KEYBOARD_LEFTSHIFT || scancode == KEYBOARD_RIGHTSHIFT || scancode == KEYBOARD_CAPSLOCK)
 			caps = !caps;
 		return shortcutManger(scancode, pressed, nbpress);
 	} else {
-		// Remove the unpressed mask
-		scancode &= ~UNPRESSED_MASK;
+		scancode &= ~UNPRESSED_MASK; // Remove the unpressed mask
 
 		if (pressed[scancode])
 			nbpress--;
@@ -63,8 +61,7 @@ int	keyboardHandler(Term *term) {
 		if (scancode == KEYBOARD_RIGHTSHIFT || scancode == KEYBOARD_LEFTSHIFT)
 			caps = !caps;
 
-		// Flush the PS/2 port
-		write_port(PS_2, 0);
+		write_port(PS_2, 0); // Flush the PS/2 port
 	}
 	return SHORTCUT_NONE;
 }

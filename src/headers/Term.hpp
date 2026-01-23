@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 19:16:39 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 13:11:08 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ class Term {
 		size_t			_scrollY;
 		/** Updating the screen in addition to the buffer? */
 		bool			_rendering;
+		/** Is the terminal active? If so, it will move the VGA cursor. */
+		bool			_active;
+		/** Used for put and write optimization. */
+		bool			_tmpActive;
 
 		uint16_t		_buffer[VGA_WIDTH * TERM_MAX_HIST_HEIGHT];
 		size_t			_bufferSize;
@@ -87,12 +91,12 @@ class Term {
 		Term	&operator=(const Term &other);
 		~Term();
 
-		void	incr(const char c);
+		void	incr(const char c, bool applyWhiteSpaces);
 		void	shiftHistUp(size_t lines);
 
-		void	putc(uint16_t vgaChar);
-		void	putc(const char c);
-		void	putc(const char c, uint16_t vgaColor);
+		void	putc(uint16_t vgaChar, bool applyWhiteSpaces = true);
+		void	putc(const char c, bool applyWhiteSpaces = true);
+		void	putc(const char c, uint16_t vgaColor, bool applyWhiteSpaces = true);
 
 		void	write(uint16_t *vgaStr, size_t len);
 		void	write(const char *str, size_t len);
@@ -105,10 +109,10 @@ class Term {
 		void	putn(int nb);
 		void	putn(int nb, uint16_t vgaColor);
 
-		void	putnHex(int nb, bool caps = false);
-		void	putnHex(int nb, bool caps, uint16_t vgaColor);
-		void	putnHex(unsigned int nb, bool caps = false);
-		void	putnHex(unsigned int nb, bool caps, uint16_t vgaColor);
+		void	putHex(int64_t nb, bool caps = false);
+		void	putHex(int64_t nb, bool caps, uint16_t vgaColor);
+		void	putUHex(uint64_t nb, bool caps = false);
+		void	putUHex(uint64_t nb, bool caps, uint16_t vgaColor);
 
 		void	fill(uint16_t vgaChar);
 		void	fill(const char c);
@@ -140,8 +144,11 @@ class Term {
 		void			resetScrollY();
 
 		bool			isRendering() const;
-		bool			setRendering(bool enable);
-	
+		void			setRendering(bool enable);
+		bool			isActive() const;
+		void			setActive(bool enable);
+		void			updateVGACursor();
+
 		void	printk(const char *fmt, ...);
 
 	private:

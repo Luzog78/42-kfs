@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 19:16:21 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 13:16:36 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ void	Term::_init() {
 
 	_scrollY = Math::clamp<ssize_t>(_cur.y - _size.y - 1, 0, _histHeight);
 	_rendering = true;
+	_active = false;
 
 	_bufferSize = VGA_WIDTH * _histHeight;
 
@@ -173,20 +174,35 @@ void	Term::_flushc(size_t x, size_t y) {
 		TERM_PTR[pos] = _buffer[VGA::pos(y, x)];
 }
 
-void	Term::incr(const char c) {
+void	Term::incr(const char c, bool applyWhiteSpaces) {
 	switch (c) {
 		case '\n':
+			if (applyWhiteSpaces)
+				while (_cur.x < _size.x)
+					_writec(_cur.x++, _cur.y, _color);
 			_cur.x = 0;
 			_cur.y++;
 			break;
 
 		case '\r':
-			if (_cur.x <= 0)
+			if (_cur.x <= 0) {
 				_cur.y--;
+				if (applyWhiteSpaces)
+					for (size_t x = 0; x < _size.x; x++)
+						_writec(x, _cur.y, _color);
+			} else if (applyWhiteSpaces)
+				for (size_t x = 0; x < _cur.x; x++)
+					_writec(x, _cur.y, _color);
 			_cur.x = 0;
 			break;
 
 		case '\t':
+			if (applyWhiteSpaces) {
+				size_t	toWrite = 4 - (_cur.x % 4);
+				for (size_t i = 0; i < toWrite; i++)
+					_writec(_cur.x++, _cur.y, _color);
+				break;
+			}
 			_cur.x += 4 - (_cur.x % 4);
 			break;
 
@@ -196,6 +212,8 @@ void	Term::incr(const char c) {
 				_cur.x = _size.x;
 			}
 			_cur.x--;
+			if (applyWhiteSpaces)
+				_writec(_cur.x, _cur.y, _color);
 			break;
 
 		default:
@@ -218,25 +236,29 @@ void	Term::shiftHistUp(size_t lines) {
 		for (size_t x = 0; x < _size.x; x++)
 			_writec(x, y - lines, _buffer[VGA::pos(y, x)]);
 	for (size_t x = 0; x < _size.x; x++)
-		_writec(x, _histHeight - 1, ' ' | _color);
+		_writec(x, _histHeight - 1, _color);
 }
 
-void	Term::putc(uint16_t vgaChar) {
-	putc(VGA::getChar(vgaChar), VGA::getColor(vgaChar));
+void	Term::putc(uint16_t vgaChar, bool applyWhiteSpaces) {
+	putc(VGA::getChar(vgaChar), VGA::getColor(vgaChar), applyWhiteSpaces);
 }
 
-void	Term::putc(const char c) {
+void	Term::putc(const char c, bool applyWhiteSpaces) {
 	uchar_t	w = getWritable(c, 132);
 	if (w)
 		_writec(_cur.x, _cur.y, w | _color);
-	incr(c);
+	incr(c, applyWhiteSpaces);
+	if (_active)
+		updateVGACursor();
 }
 
-void	Term::putc(const char c, uint16_t vgaColor) {
+void	Term::putc(const char c, uint16_t vgaColor, bool applyWhiteSpaces) {
 	uchar_t	w = getWritable(c, 132);
 	if (w)
 		_writec(_cur.x, _cur.y, w | vgaColor);
-	incr(c);
+	incr(c, applyWhiteSpaces);
+	if (_active)
+		updateVGACursor();
 }
 
 void Term::putn(int nb) {
@@ -253,108 +275,80 @@ void Term::putn(int nb, uint16_t vgaColor) {
 	put(buffer, vgaColor);
 }
 
-void Term::putnHex(int nb, bool caps) {
-	char upperHex[] = "0123456789ABCDEF";
-	char lowerHex[] = "0123456789abcdef";
-	static char str[11];
-	int i = 9;
+void Term::putHex(int64_t nb, bool caps) {
+	char buffer[18];
 
-	str[10] = '\0';
-
-	for (;nb > 0 && i >= 0; i--) {
-		if (caps)
-			str[i] = upperHex[nb % 16];
-		else
-			str[i] = lowerHex[nb % 16];
-		nb = nb / 16;
-	}
-	put(&str[i + 1]);
+	lltox(nb, buffer, caps);
+	put(buffer);
 }
 
-void Term::putnHex(int nb, bool caps, uint16_t vgaColor) {
-	char upperHex[] = "0123456789ABCDEF";
-	char lowerHex[] = "0123456789abcdef";
-	static char str[11];
-	int i = 9;
+void Term::putHex(int64_t nb, bool caps, uint16_t vgaColor) {
+	char buffer[18];
 
-	str[10] = '\0';
-
-	while (nb > 0 && i >= 0) {
-		if (caps)
-			str[i] = upperHex[nb % 16];
-		else
-			str[i] = lowerHex[nb % 16];
-		nb = nb / 16;
-		i--;
-	}
-	put(&str[i + 1], vgaColor);
+	lltox(nb, buffer, caps);
+	put(buffer, vgaColor);
 }
 
-void Term::putnHex(unsigned int nb, bool caps) {
-	char upperHex[] = "0123456789ABCDEF";
-	char lowerHex[] = "0123456789abcdef";
-	static char str[11];
-	int i = 9;
+void Term::putUHex(uint64_t nb, bool caps) {
+	char buffer[18];
 
-	str[10] = '\0';
-
-	for (;nb > 0 && i >= 0; i--) {
-		if (caps)
-			str[i] = upperHex[nb % 16];
-		else
-			str[i] = lowerHex[nb % 16];
-		nb = nb / 16;
-	}
-	put(&str[i + 1]);
+	ulltox(nb, buffer, caps);
+	put(buffer);
 }
 
-void Term::putnHex(unsigned int nb, bool caps, uint16_t vgaColor) {
-	char upperHex[] = "0123456789ABCDEF";
-	char lowerHex[] = "0123456789abcdef";
-	static char str[11];
-	int i = 9;
+void Term::putUHex(uint64_t nb, bool caps, uint16_t vgaColor) {
+	char buffer[18];
 
-	str[10] = '\0';
-
-	while (nb > 0 && i >= 0) {
-		if (caps)
-			str[i] = upperHex[nb % 16];
-		else
-			str[i] = lowerHex[nb % 16];
-		nb = nb / 16;
-		i--;
-	}
-	put(&str[i + 1], vgaColor);
+	ulltox(nb, buffer, caps);
+	put(buffer, vgaColor);
 }
 
 void Term::write(const char *str, size_t len) {
+	_tmpActive = _active, _active = false;
 	for (size_t i = 0; i < len; i++)
 		putc(str[i]);
+	if ((_active = _tmpActive))
+		updateVGACursor();
 }
 
 void	Term::write(uint16_t *vgaStr, size_t len) {
+	_tmpActive = _active, _active = false;
 	for (size_t i = 0; i < len; i++)
 		putc(vgaStr[i]);
+	if ((_active = _tmpActive))
+		updateVGACursor();
 }
 
 void	Term::write(const char *str, uint16_t vgaColor, size_t len) {
+	_tmpActive = _active, _active = false;
 	for (size_t i = 0; i < len; i++)
 		putc(str[i], vgaColor);
+	if ((_active = _tmpActive))
+		updateVGACursor();
 }
 
 void	Term::put(const char *str) {
+	_tmpActive = _active, _active = false;
 	for (size_t i = 0; str[i]; i++)
 		putc(str[i]);
+	if ((_active = _tmpActive))
+		updateVGACursor();
 }
 
 void	Term::put(uint16_t *vgaStr) {
+	_tmpActive = _active, _active = false;
 	for (size_t i = 0; vgaStr[i]; i++)
 		putc(vgaStr[i]);
+	if ((_active = _tmpActive))
+		updateVGACursor();
 }
 
 void	Term::put(const char *str, uint16_t vgaColor) {
+	_tmpActive = _active, _active = false;
 	for (size_t i = 0; str[i]; i++)
 		putc(str[i], vgaColor);
+	if ((_active = _tmpActive))
+		updateVGACursor();
 }
 
 void	Term::fill(uint16_t vgaChar) {
@@ -370,7 +364,7 @@ void	Term::fill(const char c) {
 }
 
 void	Term::clear() {
-	fill(' ');
+	fill(_color);
 }
 
 void	Term::flush() {
@@ -472,9 +466,25 @@ bool	Term::isRendering() const {
 	return _rendering;
 }
 
-bool	Term::setRendering(bool enable) {
+void	Term::setRendering(bool enable) {
 	_rendering = enable;
-	return _rendering;
+}
+
+bool	Term::isActive() const {
+	return _active;
+}
+
+void	Term::setActive(bool enable) {
+	_active = enable;
+	if (enable)
+		updateVGACursor();
+}
+
+void	Term::updateVGACursor() {
+	ssize_t	x = Math::clamp<ssize_t>(_cur.x, 0, _size.x - 1);
+	ssize_t	y = Math::clamp<ssize_t>(_cur.y - _scrollY, 0, _size.y - 1);
+
+	VGA::moveCursor(y + _renderPos.y, x + _renderPos.x);
 }
 
 
@@ -496,27 +506,27 @@ uchar_t	Term::getWritable(const uchar_t c, const uchar_t replace) {
 void Term::printkSpecifier(const char *fmt, void **arg) {
 	switch (*fmt) {
 		case 'c':
-			putc((char)*(char *)(arg));
+			putc(*(char *) arg);
 			break;
 		case 's':
-			put((const char *)*arg);
+			put(*(const char **) arg);
 			break;
 		case 'p':
 			put("0x");
-			putnHex((unsigned int)arg);
+			putUHex(*(uint64_t *) arg, false);
 			break;
 		case 'd':
 		case 'i':
-			putn(*(int *)arg);
+			putn(*(int *) arg);
 			break;
 		case 'u':
-			putn(*(unsigned int *)arg);
+			putn(*(unsigned int *) arg);
 			break;
 		case 'x':
-			putnHex(*(int *)arg);
+			putHex(*(int *) arg, false);
 			break;
 		case 'X':
-			putnHex(*(int *)arg, true);
+			putHex(*(int *) arg, true);
 			break;
 		case '%':
 			putc('%');

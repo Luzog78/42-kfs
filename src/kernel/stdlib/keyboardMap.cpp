@@ -12,7 +12,7 @@
 
 unsigned char keyboardMap[128] = {
 	0,
-	27,
+	0,
 	'1',
 	'2',
 	'3',
@@ -105,7 +105,7 @@ unsigned char keyboardMap[128] = {
 
 unsigned char upperKeyboardMap[128] = {
 	0,
-	'~',
+	0,
 	'!',
 	'@',
 	'#',
@@ -145,7 +145,7 @@ unsigned char upperKeyboardMap[128] = {
 	'L',
 	':', /* 39 */
 	'"',
-	'`',
+	'~',
 	0, /* Left shift */
 	'|',
 	'Z',

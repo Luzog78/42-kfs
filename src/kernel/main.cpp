@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 16:03:28 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 18:56:17 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 14:15:42 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,21 @@ extern "C" int	main() {
 		terms[1].putn(i);
 		terms[1].putc(' ');
 		terms[1].scrollToCursor();
-		terms[2].putnHex(i, false);
+		terms[2].putHex(i, false);
 		terms[2].putc(' ');
 		terms[2].scrollToCursor();
 	}
 
 	stack_check(true);
+	terms[activeTerm].setActive(true);
 	while (1) {
 		shortcut = keyboardHandler(&terms[activeTerm]);
 		if (shortcut != SHORTCUT_NONE) {
-			if (shortcut & TERMINAL_SWITCH_MASK)
+			if (shortcut & TERMINAL_SWITCH_MASK) {
+				terms[activeTerm].setActive(false);
 				activeTerm = (shortcut & ~TERMINAL_SWITCH_MASK);
+				terms[activeTerm].setActive(true);
+			}
 		}
 	}
 	return 0;
