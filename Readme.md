@@ -126,7 +126,7 @@ For it, wee need 3 things:
 <br>
 
 - [x] Scroll support
-- [/] Cursor support
+- [x] Cursor support
 - [x] Color support
 - [x] `printf` / `printk` function
 - [x] Handle keyboard input
@@ -136,6 +136,94 @@ For it, wee need 3 things:
 <br><br>
 
 ## Changelog
+
+<br><br>
+
+### v1.2.0 - + | kfs-1: Keyboard extended support
+
+---
+
+***[2026-01-24]***
+
+Added support for [Extended Keyset 1](https://wiki.osdev.org/PS/2_Keyboard#Scan_Code_Set_1).
+
+PS_2 normally handles keys like that:
+1. We read the scancode from the keyboard port.
+2. To show to PS_2 that we received the scancode, we need to send an acknowledgment by nullifying the value in the port.
+3. Then while PS_2 is acknowledging our acknowledgment, any read to the port result in `0xfa`.
+4. Once PS_2 acknowledged, we can read again.
+
+But some keys may generate multiple scancodes (like `R_CTRL`, `PAUSE`, `POWER`, `KP_ENTER`, etc.).
+For those, the first read will result in `0xe0`, then we have to pass the acknowledgment handshake, and then read the next byte.
+
+> For example, `L_CTRL` is `0x1d` | `R_CTRL` is `0xe0` then `0x1d`<br>
+> Or `B` is `0x30` | `VOL_UP` is `0xe0` then `0x30`.
+
+In the code, it looks something like this:
+```c++
+uint16_t	scancode;
+
+scancode = (uint8_t) read_port(0x60);
+if (scancode == 0xfa)
+	return SHORTCUT_NONE;
+
+if (scancode == 0xe0) {
+	write_port(0x60, 0); // Flush the PS/2 port
+	while (read_port(0x60) == 0xfa)
+		/* Wait... */;
+	scancode = 0x100 | read_port(0x60);
+}
+
+if (scancode == 0x11d) {
+	// Key: R_CTRL
+} else if (scancode == 0x1d) {
+	// Key: L_CTRL
+} else if (scancode == 0x130) {
+	// Key: VOL_UP
+} else if (scancode == 0x30) {
+	// Key: B
+}
+```
+
+This lets us handle more keys, like... the arrows!
+
+<br>
+
+With the new extended keyboard support, we can now move the cursor through the terminal using the arrow keys.
+
+<br>
+
+Moreover, the caps lock key is now supported!
+
+<br>
+
+The `Esc` key has a new functionality: it set the active terminal to none and hide the cursor.
+
+If we want to type again, we before need to select the terminal to switch to using the keyboard shortcuts.
+
+<br>
+
+The combinations using `Ctrl` and `Alt` are now working on the left one as well as the right one.
+
+<br>
+
+Some errors about the VGA cursor positioning were fixed.
+
+<br>
+
+To make it flawless, we ensured that the stack is big enough to handle everything
+ (multiple terminals) by once more increasing its size.
+We switched from `64 KiB` to `128 KiB`.
+
+<br>
+
+Some parts of the code were modified to conform to the project's coding style,
+ best practices, and performance optimizations.
+
+<br>
+
+And the most ***important*** thing: **kfs-1 is now complete with all the bonuses!**
+
 
 <br><br>
 

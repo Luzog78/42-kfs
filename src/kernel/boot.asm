@@ -38,7 +38,7 @@ global stack_guard
 stack_guard:
 	resb 4		; Reserve space for stack canary for stack smashing protection
 stack_bottom:
-	resb 65536	; 64 KiB stack
+	resb 131072	; 128 KiB stack
 stack_top:
 
 

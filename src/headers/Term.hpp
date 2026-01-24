@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 13:11:08 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 23:56:49 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ class Term {
 		void			_init();
 		void			_writec(size_t x, size_t y, uint16_t vgaChar);
 		void			_flushc(size_t x, size_t y);
+		void			_printkSpecifier(const char *fmt, void **arg);
 
 	public:
 		/**
@@ -114,6 +115,8 @@ class Term {
 		void	putUHex(uint64_t nb, bool caps = false);
 		void	putUHex(uint64_t nb, bool caps, uint16_t vgaColor);
 
+		void	printk(const char *fmt, ...);
+
 		void	fill(uint16_t vgaChar);
 		void	fill(const char c);
 
@@ -148,12 +151,6 @@ class Term {
 		bool			isActive() const;
 		void			setActive(bool enable);
 		void			updateVGACursor();
-
-		void	printk(const char *fmt, ...);
-
-	private:
-		void	printkSpecifier(const char *fmt, void **arg);
-
 };
 
 #endif

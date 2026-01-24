@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 18:35:44 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 18:29:02 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ typedef void				*ptr_t;
 
 extern "C" uint32_t	stack_guard;
 extern "C" bool		stack_check(bool halt);
+extern "C" uint8_t	read_port(uint16_t port);
+extern "C" void		write_port(uint16_t port, uint8_t data);
 
 #include "limits.hpp"
 #include "string.hpp"

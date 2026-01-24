@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 13:16:36 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/23 23:59:49 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -408,19 +408,25 @@ Vect2<size_t>	Term::getCursor() const {
 
 void	Term::setCursor(Vect2<size_t> pos) {
 	_cur.x = Math::clamp<size_t>(pos.x, 0, _size.x - 1);
-	_cur.y = Math::clamp<size_t>(pos.y, 0, _size.y - 1);
+	_cur.y = Math::clamp<size_t>(pos.y, 0, _histHeight - 1);
+	if (_active)
+		updateVGACursor();
 }
 
 void	Term::moveCursor(int dx, int dy) {
 	setCursor(Vect2<size_t>(
 		Math::clamp<ssize_t>(_cur.x + dx, 0, _size.x - 1),
-		Math::clamp<ssize_t>(_cur.y + dy, 0, _size.y - 1)
+		Math::clamp<ssize_t>(_cur.y + dy, 0, _histHeight - 1)
 	));
+	if (_active)
+		updateVGACursor();
 }
 
 void	Term::resetCursor() {
 	_cur.x = 0;
 	_cur.y = 0;
+	if (_active)
+		updateVGACursor();
 }
 
 Vect2<size_t>	Term::getRenderPos() const {
@@ -430,6 +436,8 @@ Vect2<size_t>	Term::getRenderPos() const {
 void	Term::setRenderPos(Vect2<size_t> renderPos) {
 	_renderPos.x = Math::clamp<size_t>(renderPos.x, 0, VGA_WIDTH);
 	_renderPos.y = Math::clamp<size_t>(renderPos.y, 0, VGA_HEIGHT);
+	if (_active)
+		updateVGACursor();
 }
 
 size_t	Term::getScrollY() const {
@@ -438,6 +446,8 @@ size_t	Term::getScrollY() const {
 
 void	Term::setScrollY(size_t scrollY) {
 	_scrollY = Math::clamp<size_t>(scrollY, 0, _histHeight - _size.y);
+	if (_active)
+		updateVGACursor();
 }
 
 size_t	Term::incrScrollY(ssize_t delta) {
@@ -455,6 +465,8 @@ size_t	Term::scrollToCursor(bool flushIfNeeded) {
 		if (flushIfNeeded)
 			flush();
 	}
+	if (_active)
+		updateVGACursor();
 	return _scrollY;
 }
 
@@ -503,7 +515,7 @@ uchar_t	Term::getWritable(const uchar_t c, const uchar_t replace) {
 	return c; // Classic printable char
 }
 
-void Term::printkSpecifier(const char *fmt, void **arg) {
+void Term::_printkSpecifier(const char *fmt, void **arg) {
 	switch (*fmt) {
 		case 'c':
 			putc(*(char *) arg);
@@ -537,11 +549,11 @@ void Term::printkSpecifier(const char *fmt, void **arg) {
 void Term::printk(const char *fmt, ...) {
 	int i = 0;
 	void **spec = (void **)&fmt;
-	spec++;
 
+	spec++;
 	while (fmt[i]) {
 		if (fmt[i] == '%') {
-			printkSpecifier(&fmt[i + 1], spec);
+			_printkSpecifier(&fmt[i + 1], spec);
 			i++;
 			if (fmt[i] != '%')
 				spec++;
