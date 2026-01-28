@@ -1,24 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   string.hpp                                         :+:      :+:    :+:   */
+/*   demo.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/28 01:06:04 by luzog78          ###   ########.fr       */
+/*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
+/*   Updated: 2026/01/28 02:34:59 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STRING_HPP
-#define STRING_HPP
+#ifndef DEMO_HPP
+#define DEMO_HPP
 
-void	itoa(int32_t n, char buffer[12]);
-void	lltox(int64_t n, char buffer[18], bool upper = false);
-void	ulltox(uint64_t n, char buffer[17], bool upper = false);
-size_t	strlen(const char *str);
-bool	isalpha(char c);
-bool	ishex(char c);
-uint8_t	gethexval(char c);
+#ifndef DEMO_NO
+# define DEMO_NO	1
+#endif
+#if DEMO_NO == 1
+# define DEMO_FUNC	demo1
+#elif DEMO_NO == 2
+# define DEMO_FUNC	demo2
+#else
+# define DEMO_FUNC	demoErr
+#endif
+
+int	demoErr();
+int	demo1();
+int	demo2();
 
 #endif

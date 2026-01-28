@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 23:59:49 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/28 02:01:43 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,52 +174,55 @@ void	Term::_flushc(size_t x, size_t y) {
 		TERM_PTR[pos] = _buffer[VGA::pos(y, x)];
 }
 
-void	Term::incr(const char c, bool applyWhiteSpaces) {
-	switch (c) {
-		case '\n':
-			if (applyWhiteSpaces)
-				while (_cur.x < _size.x)
-					_writec(_cur.x++, _cur.y, _color);
-			_cur.x = 0;
-			_cur.y++;
-			break;
-
-		case '\r':
-			if (_cur.x <= 0) {
-				_cur.y--;
+void	Term::incr(const char c, bool applyWhiteSpaces, bool applyControl) {
+	if (applyControl)
+		switch (c) {
+			case '\n':
 				if (applyWhiteSpaces)
-					for (size_t x = 0; x < _size.x; x++)
-						_writec(x, _cur.y, _color);
-			} else if (applyWhiteSpaces)
-				for (size_t x = 0; x < _cur.x; x++)
-					_writec(x, _cur.y, _color);
-			_cur.x = 0;
-			break;
-
-		case '\t':
-			if (applyWhiteSpaces) {
-				size_t	toWrite = 4 - (_cur.x % 4);
-				for (size_t i = 0; i < toWrite; i++)
-					_writec(_cur.x++, _cur.y, _color);
+					while (_cur.x < _size.x)
+						_writec(_cur.x++, _cur.y, _color);
+				_cur.x = 0;
+				_cur.y++;
 				break;
-			}
-			_cur.x += 4 - (_cur.x % 4);
-			break;
 
-		case '\b':
-			if (_cur.x <= 0) {
-				_cur.y--;
-				_cur.x = _size.x;
-			}
-			_cur.x--;
-			if (applyWhiteSpaces)
-				_writec(_cur.x, _cur.y, _color);
-			break;
+			case '\r':
+				if (_cur.x <= 0) {
+					_cur.y--;
+					if (applyWhiteSpaces)
+						for (size_t x = 0; x < _size.x; x++)
+							_writec(x, _cur.y, _color);
+				} else if (applyWhiteSpaces)
+					for (size_t x = 0; x < _cur.x; x++)
+						_writec(x, _cur.y, _color);
+				_cur.x = 0;
+				break;
 
-		default:
-			_cur.x++;
-			break;
-	}
+			case '\t':
+				if (applyWhiteSpaces) {
+					size_t	toWrite = 4 - (_cur.x % 4);
+					for (size_t i = 0; i < toWrite; i++)
+						_writec(_cur.x++, _cur.y, _color);
+					break;
+				}
+				_cur.x += 4 - (_cur.x % 4);
+				break;
+
+			case '\b':
+				if (_cur.x <= 0) {
+					_cur.y--;
+					_cur.x = _size.x;
+				}
+				_cur.x--;
+				if (applyWhiteSpaces)
+					_writec(_cur.x, _cur.y, _color);
+				break;
+
+			default:
+				_cur.x++;
+				break;
+		}
+	else
+		_cur.x++;
 
 	if (_cur.x >= _size.x) {
 		_cur.x = 0;
@@ -244,16 +247,25 @@ void	Term::putc(uint16_t vgaChar, bool applyWhiteSpaces) {
 }
 
 void	Term::putc(const char c, bool applyWhiteSpaces) {
-	uchar_t	w = getWritable(c, 132);
-	if (w)
-		_writec(_cur.x, _cur.y, w | _color);
-	incr(c, applyWhiteSpaces);
-	if (_active)
-		updateVGACursor();
+	putc(c, _color, applyWhiteSpaces);
 }
 
 void	Term::putc(const char c, uint16_t vgaColor, bool applyWhiteSpaces) {
-	uchar_t	w = getWritable(c, 132);
+	if (_alt) {
+		_alt = false;
+		_writec(_cur.x, _cur.y, (uchar_t) c | vgaColor);
+		incr(c, applyWhiteSpaces, false);
+		if (_active)
+			updateVGACursor();
+		return;
+	}
+
+	if (c == '\xff') {
+		_alt = true;
+		return;
+	}
+
+	uchar_t	w = getWritable(c, 0x08);
 	if (w)
 		_writec(_cur.x, _cur.y, w | vgaColor);
 	incr(c, applyWhiteSpaces);
@@ -503,15 +515,11 @@ void	Term::updateVGACursor() {
 /* ************************************************************************** */
 
 
-uchar_t	Term::getWritable(const uchar_t c, const uchar_t replace) {
+char	Term::getWritable(const char c, const char replace) {
 	if (c == '\n' || c == '\r' || c == '\t' || c == '\b')
 		return 0; // Position char
-	if (c < 32 || c >= 160 || c == 127)
+	if (c < ' ' || c > '~')
 		return replace; // Not writable
-	if (c == 128)
-		return 127; // Special char
-	if (c > 128)
-		return c - 128; // Special chars in range: [1; 31]
 	return c; // Classic printable char
 }
 
@@ -535,10 +543,10 @@ void Term::_printkSpecifier(const char *fmt, void **arg) {
 			putn(*(unsigned int *) arg);
 			break;
 		case 'x':
-			putHex(*(int *) arg, false);
+			putUHex(*(unsigned int *) arg, false);
 			break;
 		case 'X':
-			putHex(*(int *) arg, true);
+			putUHex(*(unsigned int *) arg, true);
 			break;
 		case '%':
 			putc('%');

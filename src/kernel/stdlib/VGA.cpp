@@ -6,14 +6,14 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:14:23 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 14:13:46 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/28 02:15:20 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.hpp"
 
-uint16_t	VGA::character(uint8_t vga_bg) {
-	return vga_bg << 12;
+uint16_t	VGA::character(uint8_t vga_fg) {
+	return vga_fg << 8;
 }
 
 uint16_t	VGA::character(uint8_t vga_fg, uint8_t vga_bg) {

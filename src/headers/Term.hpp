@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 23:56:49 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/28 01:58:50 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ class Term {
 		uint16_t		_color;
 		/** Cursor position (`0 <= x < _size.x` and `0 <= y < _histHeight`). */
 		Vect2<size_t>	_cur;
+		/** If the next character is a special character. */
+		bool			_alt;
 
 		/** From where on the VGA screen are we rendering (`0 <= x < VGA_WIDTH` and `0 <= y < VGA_HEIGHT`). */
 		Vect2<size_t>	_renderPos;
@@ -54,28 +56,12 @@ class Term {
 		/**
 		 * @brief Returns a writable character for the terminal.
 		 *
-		 * @param c The character to check. Supported range: `[0; 159]`.
-		 * @param replace The character to return when not writable. Supported range: `[0; 159]`.
+		 * @param c The character to check.
+		 * @param replace The character to return when not writable.
 		 *
-		 * @return uchar_t The writable char (range: `[1; 127]`), `0` if position char, or `replace` if not writable.
-		 *
-		 * @note Classic ASCII chars: `[0; 127]`.
-		 * @note Classic ASCII printable chars: `[32; 126]`.
-		 *
-		 * ---
-		 *
-		 * @note There is extra 32 special chars: `[1; 31]` and `127`.
-		 * @note If we put the special chars after the `127` default chars,
-		 * @note  there is `160` supported chars, so the range of acceptable
-		 * @note  characters is `[0; 159]` (`127 + 32`).
-		 *
-		 * ---
-		 *
-		 * @note Only from `32` to `126` and `128` to `159` are writable.
-		 * @note If `c` is writable:
-		 * @note   return `c == 128` ? `127` : `c >= 128` ? `c - 128` : `c`
+		 * @return char The writable char (range: `[1; 127]`), `0` if position char, or `replace` if not writable.
 		 */
-		static uchar_t	getWritable(const uchar_t c, const uchar_t replace);
+		static char	getWritable(const char c, const char replace);
 
 		Term();
 		Term(const Term &other);
@@ -92,7 +78,7 @@ class Term {
 		Term	&operator=(const Term &other);
 		~Term();
 
-		void	incr(const char c, bool applyWhiteSpaces);
+		void	incr(const char c, bool applyWhiteSpaces, bool applyControl = true);
 		void	shiftHistUp(size_t lines);
 
 		void	putc(uint16_t vgaChar, bool applyWhiteSpaces = true);

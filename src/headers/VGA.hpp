@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:14:51 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 13:59:02 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/28 02:15:31 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,26 +33,26 @@
 /** http://www.osdever.net/FreeVGA/vga/crtcreg.htm#0F */
 #define VGA_REG_CRTC_CURSOR_LOW		0x0f
 
-#define VGA_C_BLACK			0
-#define VGA_C_BLUE			1
-#define VGA_C_GREEN			2
-#define VGA_C_CYAN			3
-#define VGA_C_RED			4
-#define VGA_C_MAGENTA		5
-#define VGA_C_BROWN			6
-#define VGA_C_LIGHT_GREY	7
-#define VGA_C_DARK_GREY		8
-#define VGA_C_LIGHT_BLUE	9
-#define VGA_C_LIGHT_GREEN	10
-#define VGA_C_LIGHT_CYAN	11
-#define VGA_C_LIGHT_RED		12
-#define VGA_C_LIGHT_MAGENTA	13
-#define VGA_C_LIGHT_BROWN	14
-#define VGA_C_WHITE			15
+#define VGA_C_BLACK			0x0
+#define VGA_C_BLUE			0x1
+#define VGA_C_GREEN			0x2
+#define VGA_C_CYAN			0x3
+#define VGA_C_RED			0x4
+#define VGA_C_MAGENTA		0x5
+#define VGA_C_BROWN			0x6
+#define VGA_C_LIGHT_GREY	0x7
+#define VGA_C_DARK_GREY		0x8
+#define VGA_C_LIGHT_BLUE	0x9
+#define VGA_C_LIGHT_GREEN	0xa
+#define VGA_C_LIGHT_CYAN	0xb
+#define VGA_C_LIGHT_RED		0xc
+#define VGA_C_LIGHT_MAGENTA	0xd
+#define VGA_C_LIGHT_BROWN	0xe
+#define VGA_C_WHITE			0xf
 
 class VGA {
 	public:
-		static uint16_t			character(uint8_t vga_bg);
+		static uint16_t			character(uint8_t vga_fg);
 		static uint16_t			character(uint8_t vga_fg, uint8_t vga_bg);
 		static uint16_t			character(uchar_t c, uint8_t vga_fg, uint8_t vga_bg);
 

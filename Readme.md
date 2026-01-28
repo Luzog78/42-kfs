@@ -33,7 +33,7 @@
 ## Details
 
 - **Summary:** *Let's recreate the Kernel! Because why not?*
-- **Project version:** *`v1.1.1`*
+- **Project version:** *`v1.2.1`*
 - **Author(s):** *[ysabik](https://profile.intra.42.fr/users/ysabik)*, *[bsavinel](https://profile.intra.42.fr/users/bsavinel)*
 - **Public repo:** [GitHub](https://github.com/Luzog78/42-kfs)
 
@@ -136,6 +136,89 @@ For it, wee need 3 things:
 <br><br>
 
 ## Changelog
+
+<br><br>
+
+### v1.2.1 - + | kfs-2: Extended character support
+
+---
+
+***[2026-01-28]***
+
+Every single character of the [CP437 charset](https://en.wikipedia.org/wiki/Code_page_437) can be rendered using its corresponding hexadecimal code point using the `Alt` key.
+
+[VGA charset (CP437)](https://en.wikipedia.org/wiki/Code_page_437):
+```
+    0 1 2 3 4 5 6 7 8 9 a b c d e f  0 1 2 3 4 5 6 7 8 9 a b c d e f
+  *-----------------------------------------------------------------
+0 |   ☺ ☻ ♥ ♦ ♣ ♠ • ◘ ○ ◙ ♂ ♀ ♪ ♫ ☼  ► ◄ ↕ ‼ ¶ § ▬ ↨ ↑ ↓ → ← ∟ ↔ ▲ ▼
+2 |   ! " # $ % & ' ( ) * + , - . /  0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+4 | @ A B C D E F G H I J K L M N O  P Q R S T U V W X Y Z [ \ ] ^ _
+6 | ` a b c d e f g h i j k l m n o  p q r s t u v w x y z { | } ~ ⌂
+8 | Ç ü é â ä à å ç ê ë è ï î ì Ä Å  É æ Æ ô ö ò û ù ÿ Ö Ü ¢ £ ¥ ₧ ƒ
+a | á í ó ú ñ Ñ ª º ¿ ⌐ ¬ ½ ¼ ¡ « »  ░ ▒ ▓ │ ┤ ╡ ╢ ╖ ╕ ╣ ║ ╗ ╝ ╜ ╛ ┐
+c | └ ┴ ┬ ├ ─ ┼ ╞ ╟ ╚ ╔ ╩ ╦ ╠ ═ ╬ ╧  ╨ ╤ ╥ ╙ ╘ ╒ ╓ ╫ ╪ ┘ ┌ █ ▄ ▌ ▐ ▀
+e | α ß Γ π Σ σ µ τ ≖ Θ Ω δ ∞ ⧞ ∈ ∩  ≡ ± ≥ ≤ ⌠ ⌡ ÷ ≈ ° ∙ · √ ⁿ ² ■  
+```
+
+> For example, to type the character `µ` (hex value `0xe6`), you would press `Alt + E` then `Alt + 6` on the keyboard.
+
+> Another example, to type the character `É` (hex value `0x90`), you would press `Alt + 9` then `Alt + 0` on the keyboard.
+
+<br>
+
+To make the main function more readable, we moved the logic in a separate function.
+
+It changed from:
+```c++
+extern "C" int	main() {
+	Term terms[] = {
+		Term(
+			Vect2<size_t>(VGA_WIDTH, 16),
+			Vect2<size_t>(0, 0),
+			VGA::character(VGA_C_LIGHT_GREEN, VGA_C_DARK_GREY)
+		),
+		Term(
+			Vect2<size_t>(40, 9),
+			Vect2<size_t>(0, 16),
+			VGA::character(VGA_C_WHITE, VGA_C_BLACK)
+		),
+
+	// ... about 75 lines
+
+		if (activeTerm >= 0 && !terms[activeTerm].isActive())
+			activeTerm = -1;
+		shortcut = handleKeyboard(activeTerm >= 0 ? &terms[activeTerm] : nullptr);
+		if (shortcut != SHORTCUT_NONE) {
+			if (shortcut & FLAG_TERM_SWITCH) {
+				if (activeTerm >= 0)
+					terms[activeTerm].setActive(false);
+				activeTerm = (shortcut & ~FLAG_TERM_SWITCH);
+				terms[activeTerm].setActive(true);
+				VGA::showCursor();
+			}
+		}
+	}
+	return 0;
+```
+To something like:
+```c++
+extern "C" int	main() {
+	return demo1();
+}
+```
+```c++
+int	demo1() {
+	// The 75 lines behaviour
+}
+```
+
+This way, we can create multiple demo functions and switch between them easily, while keeping the main function clean.
+
+<br>
+
+The terminals disposition and contents have been improved to look better and display more of what we can do.
+
 
 <br><br>
 

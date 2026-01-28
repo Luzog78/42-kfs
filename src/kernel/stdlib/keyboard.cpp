@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 16:36:17 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/24 00:25:22 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/28 01:39:08 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	handleShortcut(uint16_t scancode, bool *pressed, int nbpress) {
 	if (nbpress == 2) {
 		// Ctrl + [1-3] to switch terminal
 		if ((pressed[KEY_1_L_CTRL] || pressed[KEY_1_R_CTRL])
-				&& (scancode >= KEY_1_1 && scancode <= KEY_1_3)) {
+				&& (scancode >= KEY_1_1 && scancode <= KEY_1_0)) {
 			return FLAG_TERM_SWITCH | (scancode - KEY_1_1);
 		}
 	}
@@ -24,6 +24,10 @@ int	handleShortcut(uint16_t scancode, bool *pressed, int nbpress) {
 }
 
 void	handleTerminal(Term *term, uint16_t scancode, bool *pressed, bool caps) {
+	static uint8_t	alt = 0x00;
+	static uint8_t	altCount = 0;
+	char			character;
+
 	if (pressed[KEY_1_L_CTRL] || pressed[KEY_1_R_CTRL])
 		return;
 
@@ -54,8 +58,21 @@ void	handleTerminal(Term *term, uint16_t scancode, bool *pressed, bool caps) {
 			return;
 	}
 
-	char	character = caps ? getUpperKey(scancode) : getLowerKey(scancode);
+	character = caps ? getUpperKey(scancode) : getLowerKey(scancode);
 	if (character) {
+		if ((pressed[KEY_1_L_ALT] || pressed[KEY_1_R_ALT])
+				&& ishex(character)) {
+			alt = (alt << 4) | gethexval(character);
+			altCount++;
+			if (altCount < 2)
+				return;
+			term->putc('\xff');
+			character = (char) alt;
+		}
+		if (altCount != 0) {
+			alt = 0x00;
+			altCount = 0;
+		}
 		term->putc((char) character);
 		term->scrollToCursor();
 	}

@@ -6,7 +6,7 @@
 #    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/23 23:54:52 by luzog78          ###   ########.fr        #
+#    Updated: 2026/01/27 23:22:08 by luzog78          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ ASM_SRC			:= src/kernel/boot.asm
 ASM_OBJ			:= $(ASM_SRC:.asm=.asm.o)
 
 CPP_SRC			:=	src/kernel/main.cpp \
+					src/kernel/demo.cpp \
 					src/kernel/stdlib/VGA.cpp \
 					src/kernel/stdlib/Term.cpp \
 					src/kernel/stdlib/keyboard.cpp \

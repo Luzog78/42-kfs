@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/23 18:29:02 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/01/27 23:19:54 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,6 @@ extern "C" void		write_port(uint16_t port, uint8_t data);
 #include "VGA.hpp"
 #include "Term.hpp"
 #include "keyboard.hpp"
+#include "demo.hpp"
 
 #endif
