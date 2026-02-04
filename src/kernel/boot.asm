@@ -67,6 +67,17 @@ write_port:
 	out		dx, al
 	ret
 
+gdtr DW 0 ; For limit storage
+     DD 0 ; For base storage
+
+setGdt:
+   mov   AX, [esp + 4]
+   mov   [gdtr], AX
+   mov   EAX, [ESP + 8]
+   mov   [gdtr + 2], EAX
+   lgdt  [gdtr]
+   ret
+
 _start:
 	mov dword [stack_guard], 0xdeadbeef	; Initialize stack canary
 	mov esp, stack_top					; Set up stack pointer

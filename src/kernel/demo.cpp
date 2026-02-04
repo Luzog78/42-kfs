@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   demo.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:17:49 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/28 02:54:57 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/04 11:43:43 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,27 @@ int	demo2() {
 	}
 
 	term.setActive(true);
+	while (1)
+		handleKeyboard(&term);
+	return 0;
+}
+
+int demo3() {
+	Term term = Term(
+		Vect2<size_t>(VGA_WIDTH, VGA_HEIGHT),
+		Vect2<size_t>(0, 0),
+		VGA::character(VGA_C_GREEN, VGA_C_BLACK)
+	);
+	Gdt gdt;
+	term.printk("GDT Demo\n");
+	term.setActive(true);
+	gdt.create_descriptor(0, 0, 0); // Null segment
+    gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL0)); // Kernel code segment
+    gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL0)); // Kernel data segment
+    gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL3)); // User code segment
+    gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL3)); // User data segment
+	gdt.loadGDT();
+
 	while (1)
 		handleKeyboard(&term);
 	return 0;

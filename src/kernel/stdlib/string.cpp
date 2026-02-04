@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/28 01:05:49 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/03 17:11:38 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,4 +122,11 @@ uint8_t gethexval(char c) {
 	if (c >= 'a' && c <= 'f')
 		return 10 + (c - 'a');
 	return 0;
+}
+
+void *memset (void *s, int c, size_t n) {
+	for (size_t i = 0; i < n; i++) {
+		((unsigned char *)s)[i] = (unsigned char)c;
+	}
+	return s;
 }

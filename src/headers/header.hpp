@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/27 23:19:54 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/03 16:44:28 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ extern "C" uint32_t	stack_guard;
 extern "C" bool		stack_check(bool halt);
 extern "C" uint8_t	read_port(uint16_t port);
 extern "C" void		write_port(uint16_t port, uint8_t data);
+extern "C" void		setGdt(uint32_t limit, uint32_t base);
 
 #include "limits.hpp"
 #include "string.hpp"
@@ -41,5 +42,6 @@ extern "C" void		write_port(uint16_t port, uint8_t data);
 #include "Term.hpp"
 #include "keyboard.hpp"
 #include "demo.hpp"
+#include "Gdt.hpp"
 
 #endif

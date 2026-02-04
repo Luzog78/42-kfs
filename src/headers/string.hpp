@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/28 01:06:04 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/03 16:34:44 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,6 @@ size_t	strlen(const char *str);
 bool	isalpha(char c);
 bool	ishex(char c);
 uint8_t	gethexval(char c);
+void	*memset (void *s, int c, size_t n);
 
 #endif
