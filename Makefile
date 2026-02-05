@@ -6,7 +6,7 @@
 #    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 10:10:50 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/21 08:56:21 by luzog78          ###   ########.fr        #
+#    Updated: 2026/02/04 11:08:46 by luzog78          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ DOCKER_VOLUMES	= -v "$$(pwd)/src":/workspace/src \
 # **************************************************************************** #
 
 
-all: re-quick qemu-quick
+all: re qemu
 
 help:
 	@echo "Makefile targets:"
@@ -63,7 +63,6 @@ re-quick: env-build
 
 qemu:
 	qemu-system-x86_64 -cdrom ./dist/kfs.iso
-#	-m 512M -boot d -enable-kvm
 
 qemu-quick:
 	qemu-system-x86_64 -cdrom ./dist/kfs_quick.iso -serial stdio -d int,cpu_reset
@@ -76,6 +75,7 @@ env-run: env-build
 	docker run -it $(DOCKER_VOLUMES) kfs-env
 
 env-build:
+	mkdir -p dist
 	docker build -t kfs-env .
 
 env-stop:
