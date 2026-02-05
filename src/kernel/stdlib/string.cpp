@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/02/03 17:11:38 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/05 17:55:01 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,4 +129,41 @@ void *memset (void *s, int c, size_t n) {
 		((unsigned char *)s)[i] = (unsigned char)c;
 	}
 	return s;
+}
+
+void *memcpy (void *dest, const void *src, size_t n) {
+	for (size_t i = 0; i < n; i++) {
+		((unsigned char *)dest)[i] = ((const unsigned char *)src)[i];
+	}
+	return dest;
+}
+
+int	countDigitsInBase(int n, int base) {
+	int	count = 0;
+	if (n <= 0)
+		count++;
+	while (n != 0) {
+		n /= base;
+		count++;
+	}
+	return count;
+}
+
+int	countUDigitsInBase(uint32_t n, uint32_t base) {
+	int	count = 0;
+	if (n == 0)
+		return 1;
+	while (n != 0) {
+		n /= base;
+		count++;
+	}
+	return count;
+}
+
+bool	isDigit(char c) {
+	return (c >= '0' && c <= '9');
+}
+
+bool	isPrintable(char c) {
+	return (c >= 32 && c <= 126);
 }

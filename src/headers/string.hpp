@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/02/03 16:34:44 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/05 17:55:13 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,10 @@ bool	isalpha(char c);
 bool	ishex(char c);
 uint8_t	gethexval(char c);
 void	*memset (void *s, int c, size_t n);
+void	*memcpy (void *dest, const void *src, size_t n);
+int		countDigitsInBase(int n, int base);
+int		countUDigitsInBase(uint32_t n, uint32_t base);
+bool	isDigit(char c);
+bool	isPrintable(char c);
 
 #endif

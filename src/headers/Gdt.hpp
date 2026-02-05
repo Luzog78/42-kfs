@@ -52,9 +52,10 @@ class Gdt
 		Gdt();
 		~Gdt();
 
-		void		set_entry(uint64_t descriptor);
-		uint64_t	create_descriptor(uint32_t base, uint32_t limit, uint16_t flag);
-		void		loadGDT();
+		void			set_entry(uint64_t descriptor);
+		uint64_t		create_descriptor(uint32_t base, uint32_t limit, uint16_t flag);
+		void			loadGDT();
+		const uint64_t	*getGdtEntries() const;
 
 	private:
 		uint64_t	gdt_entries[6];

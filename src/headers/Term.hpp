@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/28 01:58:50 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/05 17:56:51 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ class Term {
 		void			_init();
 		void			_writec(size_t x, size_t y, uint16_t vgaChar);
 		void			_flushc(size_t x, size_t y);
-		void			_printkSpecifier(const char *fmt, void **arg);
+		void			_printkSpecifier(const char *fmt, void **arg, int minimumWidth = -1);
+		void			_printZeroPadding(void **arg, int minimumWidth, int base, bool isUnsigned);
 
 	public:
 		/**
@@ -137,6 +138,8 @@ class Term {
 		bool			isActive() const;
 		void			setActive(bool enable);
 		void			updateVGACursor();
+
+		void			hexdump(const void* addr, size_t size);
 };
 
 #endif

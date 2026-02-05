@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/28 02:01:43 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/05 17:57:04 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -523,7 +523,20 @@ char	Term::getWritable(const char c, const char replace) {
 	return c; // Classic printable char
 }
 
-void Term::_printkSpecifier(const char *fmt, void **arg) {
+void	Term::_printZeroPadding(void **arg, int minimumWidth, int base, bool isUnsigned) {
+	int count = 0;
+	if (minimumWidth > 0)
+	{
+		if (isUnsigned)
+			count = countUDigitsInBase(*(uint32_t *) arg, base);
+		else
+			count = countDigitsInBase(*(int *) arg, base);
+		for (int i = minimumWidth - count; i > 0; i--)
+			putc('0');
+	}
+}
+
+void	Term::_printkSpecifier(const char *fmt, void **arg, int minimumWidth) {
 	switch (*fmt) {
 		case 'c':
 			putc(*(char *) arg);
@@ -533,19 +546,24 @@ void Term::_printkSpecifier(const char *fmt, void **arg) {
 			break;
 		case 'p':
 			put("0x");
-			putUHex(*(uint64_t *) arg, false);
+			_printZeroPadding(arg, 8, 16, true);
+			putUHex(*(uint32_t *) arg, false);
 			break;
 		case 'd':
 		case 'i':
+			_printZeroPadding(arg, minimumWidth, 10, false);
 			putn(*(int *) arg);
 			break;
 		case 'u':
+			_printZeroPadding(arg, minimumWidth, 10, true);
 			putn(*(unsigned int *) arg);
 			break;
 		case 'x':
+			_printZeroPadding(arg, minimumWidth, 16, true);
 			putUHex(*(unsigned int *) arg, false);
 			break;
 		case 'X':
+			_printZeroPadding(arg, minimumWidth, 16, true);
 			putUHex(*(unsigned int *) arg, true);
 			break;
 		case '%':
@@ -557,11 +575,19 @@ void Term::_printkSpecifier(const char *fmt, void **arg) {
 void Term::printk(const char *fmt, ...) {
 	int i = 0;
 	void **spec = (void **)&fmt;
-
+	int minimumWidth = 0;
+	
 	spec++;
 	while (fmt[i]) {
 		if (fmt[i] == '%') {
-			_printkSpecifier(&fmt[i + 1], spec);
+			if (isDigit(fmt[i + 1])) {
+				while (isDigit(fmt[i + 1])) {
+					minimumWidth = minimumWidth * 10 + (fmt[i + 1] - '0');
+					i++;
+				}
+			}
+			_printkSpecifier(&fmt[i + 1], spec, minimumWidth);
+			minimumWidth = 0;
 			i++;
 			if (fmt[i] != '%')
 				spec++;
@@ -569,4 +595,25 @@ void Term::printk(const char *fmt, ...) {
 			putc(fmt[i]);
 		i++;
 	}
+}
+
+void	Term::hexdump(const void* addr, size_t size) {
+	char printable[17];
+	memset(printable, 0, 17);
+	for (size_t i = 0; i < size; i++) {
+		if (i % 16 == 0) {
+			if (i != 0) {
+				printk("|%s|\n", printable);
+				memset(printable, 0, 17);
+			}
+			printk("0x%8x  ", (unsigned int)addr + (unsigned int)i);
+		}
+		printable[i % 16] = isPrintable(((unsigned char*)addr)[i]) ? ((unsigned char*)addr)[i] : '.';
+		printk("%2x ", ((unsigned char*)addr)[i]);
+	}
+	while (size % 16 != 0) {
+		printk("   ");
+		size++;
+	}
+	printk("|%s|\n", printable);
 }

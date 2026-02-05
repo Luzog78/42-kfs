@@ -1,5 +1,7 @@
 #include "Gdt.hpp"
 
+uint64_t	gdt_entries_memory[6] __attribute__((section(".mygdt")));
+
 Gdt::Gdt() : gdt_count(0) {
 	memset(gdt_entries, 0, sizeof(gdt_entries));
 }
@@ -25,7 +27,7 @@ uint64_t Gdt::create_descriptor(uint32_t base, uint32_t limit, uint16_t flag) {
  
     // Shift by 32 to allow for low part of segment
     descriptor <<= 32;
- 
+
     // Create the low 32 bit segment
     descriptor |= base  << 16;                       // set base bits 15:0
     descriptor |= limit  & 0x0000FFFF;               // set limit bits 15:0
@@ -35,7 +37,12 @@ uint64_t Gdt::create_descriptor(uint32_t base, uint32_t limit, uint16_t flag) {
 
 void Gdt::loadGDT() {
 	uint32_t limit = (sizeof(uint64_t) * gdt_count) - 1;
-	uint32_t base = (uint32_t)&gdt_entries;
 
-	setGdt(limit, base);
+    memcpy(gdt_entries_memory, gdt_entries, sizeof(uint64_t) * gdt_count);
+	setGdt(limit, (uint32_t)&gdt_entries_memory);
+    reloadSegments();
+}
+
+const uint64_t* Gdt::getGdtEntries() const {
+    return gdt_entries;
 }

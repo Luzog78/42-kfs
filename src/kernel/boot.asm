@@ -67,6 +67,12 @@ write_port:
 	out		dx, al
 	ret
 
+; *********************************GDT**************************************** ;
+
+global setGdt
+global reloadSegments
+global get_gdt_ptr
+
 gdtr DW 0 ; For limit storage
      DD 0 ; For base storage
 
@@ -77,6 +83,28 @@ setGdt:
    mov   [gdtr + 2], EAX
    lgdt  [gdtr]
    ret
+
+get_gdt_ptr:
+    mov eax, [esp + 4]   ; pointer to struct
+    sgdt [eax]           ; store GDTR into struct
+    ret
+
+reloadSegments:
+   ; Reload CS register containing code selector:
+   jmp   0x08:.reload_CS ; 0x08 is a stand-in for your code segment
+
+.reload_CS:
+   ; Reload data segment registers:
+   mov   AX, 0x10 ; 0x10 is a stand-in for your data segment
+   mov   DS, AX
+   mov   ES, AX
+   mov   FS, AX
+   mov   GS, AX
+   mov   SS, AX
+   ret
+
+
+; **************************************************************************** ;
 
 _start:
 	mov dword [stack_guard], 0xdeadbeef	; Initialize stack canary

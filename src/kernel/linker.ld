@@ -32,4 +32,6 @@ SECTIONS {
 	.bss : {
 		*(.bss)
 	}
+
+	.mySegment 0x00000800 : {KEEP(*(.mygdt))}
 }
