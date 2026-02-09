@@ -1,39 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Math.hpp                                           :+:      :+:    :+:   */
+/*   demo.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/22 02:48:54 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/09 03:41:10 by luzog78          ###   ########.fr       */
+/*   Created: 2026/02/05 18:36:06 by luzog78           #+#    #+#             */
+/*   Updated: 2026/02/09 04:37:26 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MATH_HPP
-#define MATH_HPP
-
 #include "header.hpp"
 
-namespace Math {
-	template<typename T>
-	static T	clamp(const T val, const T min, const T max) {
-		if (val < min)
-			return min;
-		if (val > max)
-			return max;
-		return val;
-	}
+namespace Commands {
+	int	demo(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv) {
+		(void) cmdLine;
+		
+		if (argc < 2) {
+			prompt->put("Usage: demo <no>\n");
+			return 1;
+		}
 
-	template<typename T>
-	static T	min(const T a, const T b) {
-		return (a < b) ? a : b;
+		__DEMO_NO__ = (int) string::atoll(argv[1]);
+		__DEMO_RUN__ = false;
+		prompt->put("Switching to demo %d...\n", __DEMO_NO__);
+		return 0;
 	}
-
-	template<typename T>
-	static T	max(const T a, const T b) {
-		return (a > b) ? a : b;
-	}
-};
-
-#endif
+}

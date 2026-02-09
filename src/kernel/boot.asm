@@ -38,7 +38,7 @@ global stack_guard
 stack_guard:
 	resb 4		; Reserve space for stack canary for stack smashing protection
 stack_bottom:
-	resb 131072	; 128 KiB stack
+	resb 524288	; 512 KiB stack
 stack_top:
 
 
@@ -55,6 +55,8 @@ extern end_ctors						; (void (*)()): End of C++ global constructors
 
 global read_port
 global write_port
+global reboot_system
+global shutdown_system
 
 read_port:
 	mov		edx, [esp + 4]
@@ -66,6 +68,26 @@ write_port:
 	mov		al, [esp + 8]
 	out		dx, al
 	ret
+
+reboot_system:
+	jmp		0xFFFF:0					; Triple fault
+
+shutdown_system:
+	; First try ACPI shutdown via port 0x604 (QEMU/Bochs)
+	mov		dx, 0x604					; I/O port for ACPI
+	mov		ax, 0x2000					; ACPI function: Sleep
+	out		dx, ax
+
+	; Alternatively: Try legacy APM shutdown
+	mov		ax, 0x5307					; APM function: Set power state
+	mov		bx, 0x0001					; Device ID: All devices
+	mov		cx, 0x0003					; Power state: Off
+	int		0x15						; APM BIOS interrupt
+
+	; If shutdown fails, halt the system
+	cli									; Disable interrupts
+	hlt									; Halt processor
+	jmp		$							; Infinite loop as fallback
 
 _start:
 	mov dword [stack_guard], 0xdeadbeef	; Initialize stack canary

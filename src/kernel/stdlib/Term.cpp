@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/28 02:01:43 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/09 03:40:49 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,54 +20,6 @@ Term::Term() :
 	_init();
 }
 
-Term::Term(uint16_t vgaColor) :
-		_size(VGA_WIDTH, VGA_HEIGHT),
-		_histHeight(TERM_MAX_HIST_HEIGHT),
-		_color(vgaColor),
-		_renderPos(0, 0) {
-	_init();
-}
-
-Term::Term(Vect2<size_t> size) :
-		_size(size.clone()),
-		_histHeight(TERM_MAX_HIST_HEIGHT),
-		_color(TERM_DEFAULT_COLOR),
-		_renderPos(0, 0) {
-	_init();
-}
-
-Term::Term(Vect2<size_t> size, uint16_t vgaColor) :
-		_size(size.clone()),
-		_histHeight(TERM_MAX_HIST_HEIGHT),
-		_color(vgaColor),
-		_renderPos(0, 0) {
-	_init();
-}
-
-Term::Term(Vect2<size_t> size, size_t histHeight) :
-		_size(size.clone()),
-		_histHeight(histHeight),
-		_color(TERM_DEFAULT_COLOR),
-		_renderPos(0, 0) {
-	_init();
-}
-
-Term::Term(Vect2<size_t> size, size_t histHeight, uint16_t vgaColor) :
-		_size(size.clone()),
-		_histHeight(histHeight),
-		_color(vgaColor),
-		_renderPos(0, 0) {
-	_init();
-}
-
-Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos) :
-		_size(size.clone()),
-		_histHeight(TERM_MAX_HIST_HEIGHT),
-		_color(TERM_DEFAULT_COLOR),
-		_renderPos(renderPos.clone()) {
-	_init();
-}
-
 Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, uint16_t vgaColor) :
 		_size(size.clone()),
 		_histHeight(TERM_MAX_HIST_HEIGHT),
@@ -76,15 +28,7 @@ Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, uint16_t vgaColor) :
 	_init();
 }
 
-Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, size_t histHeight) :
-		_size(size.clone()),
-		_histHeight(histHeight),
-		_color(TERM_DEFAULT_COLOR),
-		_renderPos(renderPos.clone()) {
-	_init();
-}
-
-Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, size_t histHeight, uint16_t vgaColor) :
+Term::Term(Vect2<size_t> size, Vect2<size_t> renderPos, uint16_t vgaColor, size_t histHeight) :
 		_size(size.clone()),
 		_histHeight(histHeight),
 		_color(vgaColor),
@@ -172,6 +116,60 @@ void	Term::_flushc(size_t x, size_t y) {
 	ssize_t	pos = VGA::pos(loc.y + _renderPos.y, loc.x + _renderPos.x);
 	if (pos >= 0 && pos < VGA_SIZE)
 		TERM_PTR[pos] = _buffer[VGA::pos(y, x)];
+}
+
+void	Term::onKeyDown(uint16_t scancode, bool *pressed, bool caps) {
+	char	character;
+
+	if (pressed[KEY_1_L_CTRL] || pressed[KEY_1_R_CTRL])
+		return;
+
+	switch (scancode) {
+		case KEY_1_ESC:
+			setActive(false);
+			VGA::hideCursor();
+			return;
+
+		case KEY_1_CURSOR_LEFT:
+			moveCursor(-1, 0);
+			scrollToCursor();
+			return;
+
+		case KEY_1_CURSOR_RIGHT:
+			moveCursor(1, 0);
+			scrollToCursor();
+			return;
+
+		case KEY_1_CURSOR_UP:
+			moveCursor(0, -1);
+			scrollToCursor();
+			return;
+
+		case KEY_1_CURSOR_DOWN:
+			moveCursor(0, 1);
+			scrollToCursor();
+			return;
+	}
+
+	character = caps ? getUpperKey(scancode) : getLowerKey(scancode);
+	if (!character)
+		return;
+
+	if ((pressed[KEY_1_L_ALT] || pressed[KEY_1_R_ALT])
+			&& string::ishex(character)) {
+		_altValue = (_altValue << 4) | string::gethexval(character);
+		_altCount++;
+		if (_altCount < 2)
+			return;
+		putc('\xff');
+		character = (char) _altValue;
+	}
+	if (_altCount != 0) {
+		_altValue = 0x00;
+		_altCount = 0;
+	}
+	putc((char) character);
+	scrollToCursor();
 }
 
 void	Term::incr(const char c, bool applyWhiteSpaces, bool applyControl) {
@@ -276,42 +274,42 @@ void	Term::putc(const char c, uint16_t vgaColor, bool applyWhiteSpaces) {
 void Term::putn(int nb) {
 	char	buffer[7];
 
-	itoa(nb, buffer);
+	string::itoa(nb, buffer);
 	put(buffer);
 }
 
 void Term::putn(int nb, uint16_t vgaColor) {
 	char	buffer[7];
 
-	itoa(nb, buffer);
+	string::itoa(nb, buffer);
 	put(buffer, vgaColor);
 }
 
 void Term::putHex(int64_t nb, bool caps) {
 	char buffer[18];
 
-	lltox(nb, buffer, caps);
+	string::lltox(nb, buffer, caps);
 	put(buffer);
 }
 
 void Term::putHex(int64_t nb, bool caps, uint16_t vgaColor) {
 	char buffer[18];
 
-	lltox(nb, buffer, caps);
+	string::lltox(nb, buffer, caps);
 	put(buffer, vgaColor);
 }
 
 void Term::putUHex(uint64_t nb, bool caps) {
 	char buffer[18];
 
-	ulltox(nb, buffer, caps);
+	string::ulltox(nb, buffer, caps);
 	put(buffer);
 }
 
 void Term::putUHex(uint64_t nb, bool caps, uint16_t vgaColor) {
 	char buffer[18];
 
-	ulltox(nb, buffer, caps);
+	string::ulltox(nb, buffer, caps);
 	put(buffer, vgaColor);
 }
 

@@ -6,7 +6,7 @@
 #    By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/19 14:31:06 by luzog78           #+#    #+#              #
-#    Updated: 2026/01/27 23:22:08 by luzog78          ###   ########.fr        #
+#    Updated: 2026/02/09 04:49:25 by luzog78          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,12 @@ CPP_SRC			:=	src/kernel/main.cpp \
 					src/kernel/stdlib/VGA.cpp \
 					src/kernel/stdlib/Term.cpp \
 					src/kernel/stdlib/keyboard.cpp \
-					src/kernel/stdlib/string.cpp
+					src/kernel/stdlib/string.cpp \
+					src/kernel/stdlib/CommandPrompt.cpp \
+					src/kernel/Commands/echo.cpp \
+					src/kernel/Commands/reboot.cpp \
+					src/kernel/Commands/shutdown.cpp \
+					src/kernel/Commands/demo.cpp
 CPP_OBJ			:= $(CPP_SRC:.cpp=.cpp.o)
 
 LINKER_FILE		:= src/kernel/linker.ld

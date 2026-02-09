@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:14:51 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/28 02:15:31 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/09 05:03:03 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,24 +50,28 @@
 #define VGA_C_LIGHT_BROWN	0xe
 #define VGA_C_WHITE			0xf
 
-class VGA {
-	public:
-		static uint16_t			character(uint8_t vga_fg);
-		static uint16_t			character(uint8_t vga_fg, uint8_t vga_bg);
-		static uint16_t			character(uchar_t c, uint8_t vga_fg, uint8_t vga_bg);
+namespace VGA {
+	uint16_t		character(uint8_t vga_fg);
+	uint16_t		character(uint8_t vga_fg, uint8_t vga_bg);
+	uint16_t		character(uchar_t c, uint8_t vga_fg, uint8_t vga_bg);
 
-		static uchar_t			getChar(uint8_t vga_char);
-		static uint16_t			getColor(uint8_t vga_char);
-		static uint8_t			getFg(uint8_t vga_char);
-		static uint8_t			getBg(uint8_t vga_char);
+	const uint16_t	DEFAULT_CHAR = character('\0', VGA_C_WHITE, VGA_C_BLACK);
 
-		static ssize_t			pos(ssize_t row, ssize_t col);
-		static Vect2<ssize_t>	sop(ssize_t pos);
+	uchar_t			getChar(uint8_t vga_char);
+	uint16_t		getColor(uint8_t vga_char);
+	uint8_t			getFg(uint8_t vga_char);
+	uint8_t			getBg(uint8_t vga_char);
 
-		static void				showCursor();
-		static void				hideCursor();
-		static void				moveCursor(ssize_t pos);
-		static void				moveCursor(size_t row, size_t col);
+	ssize_t			pos(ssize_t row, ssize_t col);
+	Vect2<ssize_t>	sop(ssize_t pos);
+
+	void			showCursor();
+	void			hideCursor();
+	void			moveCursor(ssize_t pos);
+	void			moveCursor(size_t row, size_t col);
+
+	void			debug(ssize_t pos, const char *msg, uint16_t color = 0x4f00);
+	void			fill(uint16_t character = DEFAULT_CHAR);
 };
 
 #endif

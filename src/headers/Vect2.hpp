@@ -34,6 +34,36 @@ class Vect2 {
 		~Vect2() {};
 
 		template<typename U>
+		bool operator==(const Vect2<U> &other) const {
+			return x == other.x && y == other.y;
+		};
+
+		template<typename U>
+		bool operator!=(const Vect2<U> &other) const {
+			return x != other.x || y != other.y;
+		};
+
+		template<typename U>
+		bool operator>(const Vect2<U> &other) const {
+			return y > other.y || (y == other.y && x > other.x);
+		};
+
+		template<typename U>
+		bool operator<(const Vect2<U> &other) const {
+			return y < other.y || (y == other.y && x < other.x);
+		};
+
+		template<typename U>
+		bool operator>=(const Vect2<U> &other) const {
+			return *this > other || *this == other;
+		};
+
+		template<typename U>
+		bool operator<=(const Vect2<U> &other) const {
+			return *this < other || *this == other;
+		};
+
+		template<typename U>
 		Vect2 operator+(const Vect2<U> &other) const {
 			return Vect2(x + other.x, y + other.y);
 		};
