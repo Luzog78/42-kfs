@@ -3,7 +3,7 @@
 uint64_t	gdt_entries_memory[6] __attribute__((section(".mygdt")));
 
 Gdt::Gdt() : gdt_count(0) {
-	memset(gdt_entries, 0, sizeof(gdt_entries));
+	string::memset(gdt_entries, 0, sizeof(gdt_entries));
 }
 
 Gdt::~Gdt() {
@@ -38,7 +38,7 @@ uint64_t Gdt::create_descriptor(uint32_t base, uint32_t limit, uint16_t flag) {
 void Gdt::loadGDT() {
 	uint32_t limit = (sizeof(uint64_t) * gdt_count) - 1;
 
-    memcpy(gdt_entries_memory, gdt_entries, sizeof(uint64_t) * gdt_count);
+    string::memcpy(gdt_entries_memory, gdt_entries, sizeof(uint64_t) * gdt_count);
 	setGdt(limit, (uint32_t)&gdt_entries_memory);
     reloadSegments();
 }
