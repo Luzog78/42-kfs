@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   demo.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 13:57:37 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:45:54 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ namespace Demo {
 	int	demo2();
 	int demo3();
 	int	demo4();
-	
+
 	int	(*demo(int no = __DEMO_NO__))();
 }
 

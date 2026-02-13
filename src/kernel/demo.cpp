@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   demo.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:17:49 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 16:26:06 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 17:24:32 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ namespace Demo {
 			VGA::character(VGA_C_GREEN, VGA_C_BLACK)
 		);
 
-
 		term.printk("     ");
 		for (uint8_t x = 0; x < 32; x++) {
 			if (x != 0)
@@ -190,39 +189,42 @@ namespace Demo {
 			handleKeyboard(&term);
 		return 0;
 	}
-	
+
 	int demo3() {
-		CommandPrompt term = CommandPrompt(
+		Gdt				gdt;
+		CommandPrompt	term = CommandPrompt(
 			Vect2<size_t>(VGA_WIDTH, VGA_HEIGHT),
 			Vect2<size_t>(0, 0),
 			VGA::character(VGA_C_GREEN, VGA_C_BLACK)
 		);
-		Gdt gdt;
-		
+
 		term.printk("GDT Demo\n");
-		
 		term.setActive(true);
-		gdt.set_entry(gdt.create_descriptor(0, 0, 0)); // Null segment
-		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL0))); // Kernel code segment
-		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL0))); // Kernel data segment
-		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL3))); // User code segment
-		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL3))); // User data segment
-		
+
+		gdt.setEntry(gdt.createDescriptor(0, 0, 0));						// Null segment
+		gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_CODE_PL0)));	// Kernel code segment
+		gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_DATA_PL0)));	// Kernel data segment
+		gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_STACK_PL0)));	// Kernel stack segment
+		gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_CODE_PL3)));	// User code segment
+		gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_DATA_PL3)));	// User data segment
+		gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_STACK_PL3)));	// User stack segment
+
 		term.printk("\nGDT Hexdump:\n");
-		term.hexdump((void*)gdt.getGdtEntries(), sizeof(uint64_t[5]));
-		
-		struct gdt_ptr gdtr;
-		get_gdt_ptr(&gdtr);
+		term.hexdump((void*)gdt.getEntries(), sizeof(uint64_t[7]));
+
+		struct gdt_ptr_s	gdtr;
+		gdt_get_location(&gdtr);
+
 		term.printk("\n\nGDT address: %p\n", (void*)gdtr.base);
-		
+
 		term.printk("\nData 0x00000800 Hexdump:\n");
-		term.hexdump((void*)0x00000800, sizeof(uint64_t[5]));
+		term.hexdump((void*)0x00000800, sizeof(uint64_t[7]));
 		term.printk("\nGDTR Hexdump:\n");
 		term.hexdump((void*)gdtr.base, gdtr.limit + 1);
 
 		term.putc('\n');
 		term.resetCommand();
-		
+
 		while (__DEMO_RUN__)
 			handleKeyboard(&term);
 		return 0;

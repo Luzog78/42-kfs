@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/02/13 14:34:44 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:41:23 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,22 @@
 #define STRING_HPP
 
 namespace string {
-	int64_t	atoll(const char *str);
-	void	itoa(int32_t n, char buffer[12]);
-	void	lltox(int64_t n, char buffer[18], bool upper = false);
-	void	ulltox(uint64_t n, char buffer[17], bool upper = false);
-	size_t	strlen(const char *str);
-	bool	isalpha(char c);
-	bool	ishex(char c);
-	bool	isDigit(char c);
-	bool	isPrintable(char c);
-	uint8_t	gethexval(char c);
-	int		strcmp(const char *s1, const char *s2);
-	void	*memset (void *s, int c, size_t n);
-	void	*memcpy (void *dest, const void *src, size_t n);
-	int		countDigitsInBase(int n, int base);
-	int		countUDigitsInBase(uint32_t n, uint32_t base);
-
-	
-	long unsigned int	hexStringToInt(const char *str);
-	size_t				atosize_t(const char *str);
+	int64_t		atoll(const char *str);
+	void		itoa(int32_t n, char buffer[12]);
+	void		lltox(int64_t n, char buffer[18], bool upper = false);
+	void		ulltox(uint64_t n, char buffer[17], bool upper = false);
+	uint64_t	xtoull(const char *str);
+	size_t		strlen(const char *str);
+	bool		isalpha(char c);
+	bool		ishex(char c);
+	bool		isDigit(char c);
+	bool		isPrintable(char c);
+	uint8_t		gethexval(char c);
+	int			strcmp(const char *s1, const char *s2);
+	void		*memset (void *s, int c, size_t n);
+	void		*memcpy (void *dest, const void *src, size_t n);
+	int			countDigitsInBase(int n, int base);
+	int			countUDigitsInBase(uint32_t n, uint32_t base);
 
 	/**
 	 * Splits a string into tokens based on a delimiter.
@@ -46,7 +43,8 @@ namespace string {
 	 *
 	 * @return A pointer to where the next token would start in the original string after the last split, or NULL if an error occurs.
 	 */
-	char	*split(char *str, char delim, char **table, size_t *savelen, size_t maxWidth, size_t maxHeight);
+	char		*split(char *str, char delim, char **table,
+					size_t *savelen, size_t maxWidth, size_t maxHeight);
 
 	/**
 	 * @brief Inserts a substring into a string, shifting the existing characters to the right.
@@ -59,7 +57,8 @@ namespace string {
 	 *
 	 * @return `0` on success, `-1` on failure.
 	 */
-	int		insert(char *dest, const char *src, size_t index, ssize_t amount, size_t maxLen);
+	int			insert(char *dest, const char *src, size_t index,
+					ssize_t amount, size_t maxLen);
 
 	/**
 	 * @brief Removes a substring from a string, shifting the remaining characters to the left.
@@ -70,7 +69,7 @@ namespace string {
 	 *
 	 * @return `0` on success, `-1` on failure.
 	 */
-	int		removeSubstring(char *str, size_t index, size_t length);
+	int			removeSubstring(char *str, size_t index, size_t length);
 }
 
 #endif

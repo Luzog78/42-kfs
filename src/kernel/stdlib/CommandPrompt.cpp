@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandPrompt.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 13:33:46 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:42:40 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ CommandPrompt::~CommandPrompt() {}
 
 /* ************************************************************************** */
 
-cmd_func_t CommandPrompt::getCommandFunc(const char *cmd) {
+
+cmd_func_t	CommandPrompt::getCommandFunc(const char *cmd) {
 	if (!string::strcmp(cmd, "echo"))
 		return (cmd_func_t) Commands::echo;
 	if (!string::strcmp(cmd, "reboot"))

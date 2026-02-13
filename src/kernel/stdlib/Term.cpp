@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 13:26:28 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 17:04:51 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -522,7 +522,7 @@ char	Term::getWritable(const char c, const char replace) {
 }
 
 void	Term::_printZeroPadding(void **arg, int minimumWidth, int base, bool isUnsigned) {
-	int count = 0;
+	int	count = 0;
 	if (minimumWidth > 0)
 	{
 		if (isUnsigned)
@@ -570,10 +570,10 @@ void	Term::_printkSpecifier(const char *fmt, void **arg, int minimumWidth) {
 	}
 }
 
-void Term::printk(const char *fmt, ...) {
-	int i = 0;
-	void **spec = (void **)&fmt;
-	int minimumWidth = 0;
+void	Term::printk(const char *fmt, ...) {
+	int		i = 0;
+	void	**spec = (void **) &fmt;
+	int		minimumWidth = 0;
 	
 	spec++;
 	while (fmt[i]) {
@@ -595,8 +595,9 @@ void Term::printk(const char *fmt, ...) {
 	}
 }
 
-void	Term::hexdump(const void* addr, size_t size) {
-	char printable[17];
+void	Term::hexdump(const ptr_t addr, size_t size) {
+	char	printable[17];
+
 	string::memset(printable, 0, 17);
 	for (size_t i = 0; i < size; i++) {
 		if (i % 16 == 0) {
@@ -604,10 +605,10 @@ void	Term::hexdump(const void* addr, size_t size) {
 				printk("|%s|\n", printable);
 				string::memset(printable, 0, 17);
 			}
-			printk("0x%8x  ", (unsigned int)addr + (unsigned int)i);
+			printk("0x%8x  ", (uint32_t) addr + (uint32_t) i);
 		}
-		printable[i % 16] = string::isPrintable(((unsigned char*)addr)[i]) ? ((unsigned char*)addr)[i] : '.';
-		printk("%2x ", ((unsigned char*)addr)[i]);
+		printable[i % 16] = string::isPrintable(((uchar_t *) addr)[i]) ? ((uchar_t *) addr)[i] : '.';
+		printk("%2x ", ((uchar_t *) addr)[i]);
 	}
 	while (size % 16 != 0) {
 		printk("   ");

@@ -33,5 +33,7 @@ SECTIONS {
 		*(.bss)
 	}
 
-	.mySegment 0x00000800 : {KEEP(*(.mygdt))}
+	.mySegment 0x00000800 : {
+		KEEP(*(.mygdt))
+	}
 }

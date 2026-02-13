@@ -6,14 +6,14 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/05 18:36:06 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/09 03:37:58 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/13 16:43:31 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.hpp"
 
 namespace Commands {
-	int shutdown(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv) {
+	int	shutdown(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv) {
 		(void) cmdLine;
 
 		int64_t	delay = 0;

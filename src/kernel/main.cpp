@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 16:03:28 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 16:24:47 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 17:24:40 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.hpp"
-#include "keyboard.hpp"
 
 const char *__42__[13] = { \
 	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
@@ -40,16 +39,22 @@ extern "C" bool	stack_check(bool halt) {
 	return false;
 }
 
-extern "C" int	main() {
-	Gdt gdt;
-	
-	gdt.set_entry(gdt.create_descriptor(0, 0, 0)); // Null segment
-	gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL0))); // Kernel code segment
-	gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL0))); // Kernel data segment
-	gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL3))); // User code segment
-	gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL3))); // User data segment
+static void	initGDT() {
+	Gdt	gdt;
+
+	gdt.setEntry(gdt.createDescriptor(0, 0, 0));						// Null segment
+	gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_CODE_PL0)));	// Kernel code segment
+	gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_DATA_PL0)));	// Kernel data segment
+	gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_STACK_PL0)));	// Kernel stack segment
+	gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_CODE_PL3)));	// User code segment
+	gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_DATA_PL3)));	// User data segment
+	gdt.setEntry(gdt.createDescriptor(0, 0x000FFFFF, (GDT_STACK_PL3)));	// User stack segment
 	gdt.loadGDT();
-	
+}
+
+extern "C" int	main() {
+	initGDT();
+
 	while (1) {
 		__DEMO_RUN__ = true;
 		VGA::fill();

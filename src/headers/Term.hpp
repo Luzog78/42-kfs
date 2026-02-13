@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Term.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 13:19:35 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 17:03:05 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ class Term {
 		void			setActive(bool enable);
 		void			updateVGACursor();
 
-		void			hexdump(const void* addr, size_t size);
+		void			hexdump(const ptr_t addr, size_t size);
 };
 
 #endif

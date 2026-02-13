@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/02/13 14:34:04 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:41:41 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,15 +131,15 @@ namespace string {
 		buffer[i] = '\0';
 	}
 
-	bool isalpha(char c) {
+	bool	isalpha(char c) {
 		return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 	}
 
-	bool ishex(char c) {
+	bool	ishex(char c) {
 		return ((c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') || (c >= '0' && c <= '9'));
 	}
 
-	uint8_t gethexval(char c) {
+	uint8_t	gethexval(char c) {
 		if (c >= '0' && c <= '9')
 			return c - '0';
 		if (c >= 'A' && c <= 'F')
@@ -229,21 +229,21 @@ namespace string {
 		str[len - length] = '\0';
 		return 0;
 	}
-	
-	void *memset (void *s, int c, size_t n) {
+
+	void	*memset(void *s, int c, size_t n) {
 		for (size_t i = 0; i < n; i++) {
 			((unsigned char *)s)[i] = (unsigned char)c;
 		}
 		return s;
 	}
-	
-	void *memcpy (void *dest, const void *src, size_t n) {
+
+	void	*memcpy(void *dest, const void *src, size_t n) {
 		for (size_t i = 0; i < n; i++) {
 			((unsigned char *)dest)[i] = ((const unsigned char *)src)[i];
 		}
 		return dest;
 	}
-	
+
 	int	countDigitsInBase(int n, int base) {
 		int	count = 0;
 		if (n <= 0)
@@ -254,7 +254,7 @@ namespace string {
 		}
 		return count;
 	}
-	
+
 	int	countUDigitsInBase(uint32_t n, uint32_t base) {
 		int	count = 0;
 		if (n == 0)
@@ -265,59 +265,36 @@ namespace string {
 		}
 		return count;
 	}
-	
+
 	bool	isDigit(char c) {
 		return (c >= '0' && c <= '9');
 	}
-	
+
 	bool	isPrintable(char c) {
 		return (c >= 32 && c <= 126);
 	}
 
-	long unsigned int hexStringToInt(const char *str)
-	{
-		long unsigned int result = 0;
-		int i = 0;
-		char c;
+	uint64_t	xtoull(const char *str) {
+		uint64_t	result = 0;
+		int			i = 0;
+		char		c;
 
 		if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
-		i = 2;
+			i = 2;
 
-		while (str[i] != '\0')
-		{
+		while (str[i] != '\0') {
 			c = str[i];
 
 			if (c >= '0' && c <= '9')
 				result = result * 16 + (c - '0');
 			else if (c >= 'a' && c <= 'f')
 				result = result * 16 + (c - 'a' + 10);
-	   		else if (c >= 'A' && c <= 'F')
+			else if (c >= 'A' && c <= 'F')
 				result = result * 16 + (c - 'A' + 10);
 			else
 				return result;
 			i++;
 		}
-
-		return result;
-	}
-
-	size_t	atosize_t(const char *str)
-	{
-		size_t result = 0;
-		int i = 0;
-		char c;
-
-		while (str[i] != '\0')
-		{
-			c = str[i];
-
-			if (c >= '0' && c <= '9')
-				result = result * 10 + (c - '0');
-			else
-				return result;
-			i++;
-		}
-
 		return result;
 	}
 }
