@@ -132,10 +132,160 @@ For it, wee need 3 things:
 - [x] Handle keyboard input
 - [x] Multiscreens + Keyboard Shortcuts
 
+#### kfs-2
+
+- [x] create and load GDT
+- [x] GDT at 0x00000800
+- [x] Hexdump
+
+<br>
+
+- [x] Shutdown
+- [x] Reboot
+- [x] Command interface
 
 <br><br>
 
 ## Changelog
+
+<br><br>
+
+### v1.2.3 - + | kfs-2: GDT implemetation
+
+The GDT is a protection level mechanism handled at the processor level. Depending on the role assigned to a program during execution, it either allows or denies access to certain areas of memory. This method has become obsolete but is still mandatory.
+
+Therefore, we grant all access rights to both the kernel and the user, and permissions will instead be enforced during paging.
+
+To place the GDT in memory, we first need to create a descriptor table. Each descriptor consists of a base (the beginning of the area covered by the descriptor), a limit (the size of the GDT), and several flags. Then, we must place all the information in the correct order as indicated by the diagram.
+
+This function creates a descriptor so that it is properly interpreted:
+
+```c
+uint64_t create_descriptor(uint32_t base, uint32_t limit, uint16_t flag) {
+   uint64_t descriptor;
+   // Create the high 32 bit segment
+   descriptor  =  limit       & 0x000F0000;         // set limit bits 19:16
+   descriptor |= (flag <<  8) & 0x00F0FF00;         // set type, p, dpl, s, g, d/b, l and avl fields
+   descriptor |= (base >> 16) & 0x000000FF;         // set base bits 23:16
+   descriptor |=  base        & 0xFF000000;         // set base bits 31:24
+   // Shift by 32 to allow for low part of segment
+   descriptor <<= 32;
+
+
+   // Create the low 32 bit segment
+   descriptor |= base  << 16;                       // set base bits 15:0
+   descriptor |= limit  & 0x0000FFFF;               // set limit bits 15:0
+
+
+  return descriptor;
+}
+```
+
+
+Here are the various flags and an example of how to arrange the flags for kernel code access:
+
+```c
+#define SEG_DESCTYPE(x)  ((x) << 0x04) // Descriptor type (0 for system, 1 for code/data)
+#define SEG_PRES(x)      ((x) << 0x07) // Present
+#define SEG_SAVL(x)      ((x) << 0x0C) // Available for system use
+#define SEG_LONG(x)      ((x) << 0x0D) // Long mode
+#define SEG_SIZE(x)      ((x) << 0x0E) // Size (0 for 16-bit, 1 for 32)
+#define SEG_GRAN(x)      ((x) << 0x0F) // Granularity (0 for 1B - 1MB, 1 for 4KB - 4GB)
+#define SEG_PRIV(x)     (((x) &  0x03) << 0x05)   // Set privilege level (0 - 3)
+```
+
+
+```c
+#define GDT_CODE_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
+                    SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+                    SEG_PRIV(0)     | SEG_CODE_EXRD
+```
+
+
+To make the processor aware of the GDT, we use lgdt, which loads the GDT into the processor.
+
+Note: you must provide the size of the GDT, and the first GDT entry must be NULL.
+
+```asm
+gdtr DW 0 ; For limit storage
+    DD 0 ; For base storage
+
+
+setGdt:
+ mov  AX, [esp + 4]
+ mov  [gdtr], AX
+ mov  EAX, [ESP + 8]
+ mov  [gdtr + 2], EAX
+ lgdt [gdtr]
+ ret
+```
+
+
+Next, we need to reload the segment registers to ensure the kernel uses the updated access permissions.
+
+Note: a far jump is necessary for this, as it specifies the privilege level with which the code should execute. 0x08 indicates kernel code.
+
+```asm
+reloadSegments:
+  ; Reload CS register containing code selector:
+ jmp  0x08:.reload_CS ; 0x08 is a stand-in for your code segment
+
+
+.reload_CS:
+  ; Reload data segment registers:
+ mov  AX, 0x10 ; 0x10 is a stand-in for your data segment
+ mov  DS, AX
+ mov  ES, AX
+ mov  FS, AX
+ mov  GS, AX
+ mov  SS, AX
+ ret
+```
+
+
+By convention, the GDT is placed at memory address 0x00000800. To do this, we create a segment in the linker at address 0x00000800, which we link to the section where we will place our future GDT.
+
+```c
+uint64_t gdt_entries_memory[6] __attribute__((section(".mygdt")));
+```
+```
+.mySegment 0x00000800 : {KEEP(*(.mygdt))}
+```
+
+
+<br><br>
+
+### v1.2.2 - + | kfs-2: Command interface, reboot and shutdown
+
+To reboot the system, we cause a “triple fault.” When this error is triggered, the processor restarts in order to resume on a clean state.
+
+```asm
+reboot_system:
+	jmp		0xFFFF:0					; Triple fault
+```
+
+For shutdown, we first attempt to shut down via port 0x604 by invoking the ACPI sleep function.
+If that does not work, we send a SIGINT signal to the APM.
+If that still does not work, we halt the system.
+
+```asm
+shutdown_system:
+	; First try ACPI shutdown via port 0x604 (QEMU/Bochs)
+	mov		dx, 0x604					; I/O port for ACPI
+	mov		ax, 0x2000					; ACPI function: Sleep
+	out		dx, ax
+
+	; Alternatively: Try legacy APM shutdown
+	mov		ax, 0x5307					; APM function: Set power state
+	mov		bx, 0x0001					; Device ID: All devices
+	mov		cx, 0x0003					; Power state: Off
+	int		0x15						; APM BIOS interrupt
+
+	; If shutdown fails, halt the system
+	cli									; Disable interrupts
+	hlt									; Halt processor
+	jmp		$
+```
 
 <br><br>
 
