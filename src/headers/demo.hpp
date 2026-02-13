@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 13:30:17 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:57:37 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define DEMO_HPP
 
 #ifndef DEMO_NO
-# define DEMO_NO	3
+# define DEMO_NO	1
 #endif
 
 extern int	__DEMO_NO__;

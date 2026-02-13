@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Commands.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/05 18:31:55 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/09 04:37:48 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/13 13:34:08 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ namespace Commands {
 	int	reboot(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
 	int	shutdown(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
 	int	demo(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
+	int	hexdump(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
 }
 
 #endif

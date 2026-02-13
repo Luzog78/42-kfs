@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:51:36 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/02/13 13:23:01 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 14:34:44 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ namespace string {
 	void	*memcpy (void *dest, const void *src, size_t n);
 	int		countDigitsInBase(int n, int base);
 	int		countUDigitsInBase(uint32_t n, uint32_t base);
+
+	
+	long unsigned int	hexStringToInt(const char *str);
+	size_t				atosize_t(const char *str);
 
 	/**
 	 * Splits a string into tokens based on a delimiter.

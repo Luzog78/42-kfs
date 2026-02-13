@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandPrompt.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:17:37 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/09 04:48:46 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/13 13:33:46 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ cmd_func_t CommandPrompt::getCommandFunc(const char *cmd) {
 		return (cmd_func_t) Commands::shutdown;
 	if (!string::strcmp(cmd, "demo"))
 		return (cmd_func_t) Commands::demo;
+	if (!string::strcmp(cmd, "hexdump"))
+		return (cmd_func_t) Commands::hexdump;
 	return 0;
 }
 

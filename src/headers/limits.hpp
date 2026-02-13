@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   limits.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
+/*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/22 18:31:32 by luzog78           #+#    #+#             */
-/*   Updated: 2026/01/22 18:35:23 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/13 13:51:46 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,5 +49,7 @@
 #define SSIZE_MIN		INT64_MIN
 #define SSIZE_MAX		INT64_MAX
 #define SIZE_MAX		UINT64_MAX
+
+#define ADDR_MAX		0x0000FFFF
 
 #endif

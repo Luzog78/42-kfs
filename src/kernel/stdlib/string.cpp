@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 11:33:01 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/02/13 13:20:59 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 14:34:04 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,5 +272,52 @@ namespace string {
 	
 	bool	isPrintable(char c) {
 		return (c >= 32 && c <= 126);
+	}
+
+	long unsigned int hexStringToInt(const char *str)
+	{
+		long unsigned int result = 0;
+		int i = 0;
+		char c;
+
+		if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
+		i = 2;
+
+		while (str[i] != '\0')
+		{
+			c = str[i];
+
+			if (c >= '0' && c <= '9')
+				result = result * 16 + (c - '0');
+			else if (c >= 'a' && c <= 'f')
+				result = result * 16 + (c - 'a' + 10);
+	   		else if (c >= 'A' && c <= 'F')
+				result = result * 16 + (c - 'A' + 10);
+			else
+				return result;
+			i++;
+		}
+
+		return result;
+	}
+
+	size_t	atosize_t(const char *str)
+	{
+		size_t result = 0;
+		int i = 0;
+		char c;
+
+		while (str[i] != '\0')
+		{
+			c = str[i];
+
+			if (c >= '0' && c <= '9')
+				result = result * 10 + (c - '0');
+			else
+				return result;
+			i++;
+		}
+
+		return result;
 	}
 }

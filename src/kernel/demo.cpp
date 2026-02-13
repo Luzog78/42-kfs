@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 23:17:49 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/13 13:30:40 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:26:06 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ namespace Demo {
 	}
 	
 	int demo3() {
-		Term term = Term(
+		CommandPrompt term = CommandPrompt(
 			Vect2<size_t>(VGA_WIDTH, VGA_HEIGHT),
 			Vect2<size_t>(0, 0),
 			VGA::character(VGA_C_GREEN, VGA_C_BLACK)
@@ -207,7 +207,6 @@ namespace Demo {
 		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL0))); // Kernel data segment
 		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL3))); // User code segment
 		gdt.set_entry(gdt.create_descriptor(0, 0x000FFFFF, (GDT_DATA_PL3))); // User data segment
-		gdt.loadGDT();
 		
 		term.printk("\nGDT Hexdump:\n");
 		term.hexdump((void*)gdt.getGdtEntries(), sizeof(uint64_t[5]));
@@ -220,10 +219,12 @@ namespace Demo {
 		term.hexdump((void*)0x00000800, sizeof(uint64_t[5]));
 		term.printk("\nGDTR Hexdump:\n");
 		term.hexdump((void*)gdtr.base, gdtr.limit + 1);
+
+		term.putc('\n');
+		term.resetCommand();
 		
-		
-		while (1)
-		handleKeyboard(&term);
+		while (__DEMO_RUN__)
+			handleKeyboard(&term);
 		return 0;
 	}
 }
