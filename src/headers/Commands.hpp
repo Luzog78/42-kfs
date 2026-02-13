@@ -1,39 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Math.hpp                                           :+:      :+:    :+:   */
+/*   Commands.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/22 02:48:54 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/09 03:41:10 by luzog78          ###   ########.fr       */
+/*   Created: 2026/02/05 18:31:55 by luzog78           #+#    #+#             */
+/*   Updated: 2026/02/09 04:37:48 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MATH_HPP
-#define MATH_HPP
+#ifndef COMMANDS_HPP
+#define COMMANDS_HPP
 
 #include "header.hpp"
 
-namespace Math {
-	template<typename T>
-	static T	clamp(const T val, const T min, const T max) {
-		if (val < min)
-			return min;
-		if (val > max)
-			return max;
-		return val;
-	}
-
-	template<typename T>
-	static T	min(const T a, const T b) {
-		return (a < b) ? a : b;
-	}
-
-	template<typename T>
-	static T	max(const T a, const T b) {
-		return (a > b) ? a : b;
-	}
-};
+namespace Commands {
+	int	echo(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
+	int	reboot(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
+	int	shutdown(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
+	int	demo(CommandPrompt *prompt, char *cmdLine, size_t argc, char **argv);
+}
 
 #endif

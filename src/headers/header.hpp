@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 17:13:38 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/05 17:52:49 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:22:44 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,11 @@ extern "C" void		write_port(uint16_t port, uint8_t data);
 extern "C" void		setGdt(uint32_t limit, uint32_t base);
 extern "C" void		reloadSegments();
 extern "C" void     get_gdt_ptr(struct gdt_ptr* out);
+extern "C" void		reboot_system();
+extern "C" void		shutdown_system();
+
+/** 42 KFS Header */
+extern const char *__42__[13];
 
 #include "limits.hpp"
 #include "string.hpp"
@@ -50,5 +55,7 @@ extern "C" void     get_gdt_ptr(struct gdt_ptr* out);
 #include "keyboard.hpp"
 #include "demo.hpp"
 #include "Gdt.hpp"
+#include "CommandPrompt.hpp"
+#include "Commands.hpp"
 
 #endif

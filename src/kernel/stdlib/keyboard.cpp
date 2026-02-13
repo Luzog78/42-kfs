@@ -6,7 +6,7 @@
 /*   By: luzog78 <luzog78@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 16:36:17 by bsavinel          #+#    #+#             */
-/*   Updated: 2026/01/28 01:39:08 by luzog78          ###   ########.fr       */
+/*   Updated: 2026/02/08 15:35:35 by luzog78          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,61 +21,6 @@ int	handleShortcut(uint16_t scancode, bool *pressed, int nbpress) {
 		}
 	}
 	return SHORTCUT_NONE;
-}
-
-void	handleTerminal(Term *term, uint16_t scancode, bool *pressed, bool caps) {
-	static uint8_t	alt = 0x00;
-	static uint8_t	altCount = 0;
-	char			character;
-
-	if (pressed[KEY_1_L_CTRL] || pressed[KEY_1_R_CTRL])
-		return;
-
-	switch (scancode) {
-		case KEY_1_ESC:
-			term->setActive(false);
-			VGA::hideCursor();
-			return;
-
-		case KEY_1_CURSOR_LEFT:
-			term->moveCursor(-1, 0);
-			term->scrollToCursor();
-			return;
-		
-		case KEY_1_CURSOR_RIGHT:
-			term->moveCursor(1, 0);
-			term->scrollToCursor();
-			return;
-
-		case KEY_1_CURSOR_UP:
-			term->moveCursor(0, -1);
-			term->scrollToCursor();
-			return;
-
-		case KEY_1_CURSOR_DOWN:
-			term->moveCursor(0, 1);
-			term->scrollToCursor();
-			return;
-	}
-
-	character = caps ? getUpperKey(scancode) : getLowerKey(scancode);
-	if (character) {
-		if ((pressed[KEY_1_L_ALT] || pressed[KEY_1_R_ALT])
-				&& ishex(character)) {
-			alt = (alt << 4) | gethexval(character);
-			altCount++;
-			if (altCount < 2)
-				return;
-			term->putc('\xff');
-			character = (char) alt;
-		}
-		if (altCount != 0) {
-			alt = 0x00;
-			altCount = 0;
-		}
-		term->putc((char) character);
-		term->scrollToCursor();
-	}
 }
 
 int	handleKeyboard(Term *term) {
@@ -104,7 +49,7 @@ int	handleKeyboard(Term *term) {
 		if (scancode == KEY_1_L_SHIFT || scancode == KEY_1_R_SHIFT)
 			caps = true;
 		if (term)
-			handleTerminal(term, scancode, pressed, caps || capsLock);
+			term->onKeyDown(scancode, pressed, caps || capsLock);
 		return handleShortcut(scancode, pressed, nbpress);
 	} else {
 		scancode &= ~KEY_1_UNPRESSED_FLAG; // Remove the unpressed flag

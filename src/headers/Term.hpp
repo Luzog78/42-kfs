@@ -6,7 +6,7 @@
 /*   By: bsavinel <bsavinel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 19:22:57 by luzog78           #+#    #+#             */
-/*   Updated: 2026/02/05 17:56:51 by bsavinel         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:19:35 by bsavinel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #define TERM_DEFAULT_COLOR		VGA::character(VGA_C_LIGHT_GREY, VGA_C_BLACK)
 
 class Term {
-	private:
+	protected:
 		/** Size of the terminal (`0 <= x < VGA_WIDTH` and `0 <= y < VGA_HEIGHT`). */
 		Vect2<size_t>	_size;
 		/** Height of the history buffer, containing active screen. */
@@ -32,6 +32,11 @@ class Term {
 		Vect2<size_t>	_cur;
 		/** If the next character is a special character. */
 		bool			_alt;
+
+		/** Used to store parts of the future alt character. */
+		uint8_t			_altValue = 0x00;
+		/** Count how many parts the future alt character has (1 part = 4 bits). */
+		uint8_t			_altCount = 0;
 
 		/** From where on the VGA screen are we rendering (`0 <= x < VGA_WIDTH` and `0 <= y < VGA_HEIGHT`). */
 		Vect2<size_t>	_renderPos;
@@ -66,18 +71,13 @@ class Term {
 
 		Term();
 		Term(const Term &other);
-		Term(uint16_t vgaColor);
-		Term(Vect2<size_t> size);
-		Term(Vect2<size_t> size, uint16_t vgaColor);
-		Term(Vect2<size_t> size, size_t histHeight);
-		Term(Vect2<size_t> size, size_t histHeight, uint16_t vgaColor);
-		Term(Vect2<size_t> size, Vect2<size_t> renderPos);
 		Term(Vect2<size_t> size, Vect2<size_t> renderPos, uint16_t vgaColor);
-		Term(Vect2<size_t> size, Vect2<size_t> renderConfm, size_t histHeight);
-		Term(Vect2<size_t> size, Vect2<size_t> renderPos, size_t histHeight, uint16_t vgaColor);
+		Term(Vect2<size_t> size, Vect2<size_t> renderPos, uint16_t vgaColor, size_t histHeight);
 
 		Term	&operator=(const Term &other);
 		~Term();
+
+		virtual void	onKeyDown(uint16_t scancode, bool *pressed, bool caps);
 
 		void	incr(const char c, bool applyWhiteSpaces, bool applyControl = true);
 		void	shiftHistUp(size_t lines);
